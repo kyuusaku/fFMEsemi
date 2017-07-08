@@ -1,0 +1,58 @@
+#include "mex.h"
+#include "mtc.h"
+
+void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+{
+
+    int n_nodes, n_edges, n_classes, n_trees, tree_type;
+    
+    double *ptr;
+    
+    ptr = mxGetPr(prhs[1]);
+    n_nodes = (int)(ptr[0]);
+    
+    ptr = mxGetPr(prhs[3]);
+    n_classes = (int)(ptr[0]);
+    
+    ptr = mxGetPr(prhs[4]);
+    tree_type = (int)(ptr[0]);    
+    
+    ptr = mxGetPr(prhs[5]);
+    n_trees = (int)(ptr[0]);    
+        
+    ptr = mxGetPr(prhs[0]);
+    n_edges = mxGetM(prhs[0]);
+    struct Edge *graph = (struct Edge *)malloc(n_edges*sizeof(struct Edge));
+    for(int i=0; i<n_edges; i++ ){
+        graph[i].x = (int)(ptr[i])-1;
+        graph[i].y = (int)(ptr[n_edges+i])-1;
+        graph[i].w = ptr[2*n_edges+i];
+    }
+    
+    printf("# of nodes: %d, # of edges: %d\n", n_nodes, n_edges);
+    printf("# of classses: %d\n", n_classes);
+    if( tree_type==0 )
+        printf("tree type: minimum spannining tree\n");
+    else if( tree_type==1 )
+        printf("tree type: shortest path tree\n");
+    else if( tree_type==2 )
+        printf("tree type: random spanning tree\n");                
+    printf("# of tree: %d\n", n_trees);    
+    
+    ptr = mxGetPr(prhs[2]);
+    int *y = (int *)malloc(n_nodes*sizeof(int));
+    for(int i=0; i<n_nodes; i++)
+        y[i] = (int)(ptr[i]);
+ /**/   
+    printf("1---\n");
+    mtc(graph, n_nodes, n_edges, y, n_classes, tree_type, n_trees);
+    printf("2---\n");
+    plhs[0] = mxCreateDoubleMatrix(n_nodes, 1, mxREAL);
+    ptr = mxGetPr(plhs[0]);
+    for(int i=0; i<n_nodes; i++)
+        ptr[i] = y[i];
+    printf("3---\n"); 
+    free(graph);
+    free(y);        
+    return;
+}
