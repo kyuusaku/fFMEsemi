@@ -3,7 +3,6 @@ function run_experiment_semi(dataset,o,varargin)
 
 %% env
 close all;
-clear;
 clc;
 warning off all;
 % add necessary paths
