@@ -1,24 +1,32 @@
-function norb_small_gray_semi(o)
-% norb small gray semi
+function run_experiment_semi(dataset,o,varargin)
+% code for running the scalable semi supervised learning algorithms
 
 %% env
 close all;
-%clear;
+clear;
 clc;
 warning off all;
+% add necessary paths
 addpath(genpath('./baselines'));
 addpath(genpath('./mmlp'));
-addpath('./flann-linux');
-%addpath('./flann-win');
-% parpool(8);
+addpath(genpath('./framework'));
+addpath(genpath('./fFME'));
+% parse inputs
+p = parse_inputs();
+parse(p,dataset,o,varargin{:});
+% 
+addpath(['./flann-' p.Results.system]);
+if p.Results.parfor
+    parpool(p.Results.parforNumber);
+end
 
 %% para
-data_name = 'norb_small_gray';
+data_name = get_data_name(p.Results.dataset);
 save_path = ['result/' data_name '/semi'];
 if ~exist(save_path, 'dir')
     mkdir(save_path);
 end
-record_path = fullfile(save_path, ['record-' num2str(o)]);
+record_path = fullfile(save_path, ['record-' num2str(p.Results.o)]);
 if ~exist(record_path, 'dir')
     mkdir(record_path);
 end
@@ -36,14 +44,10 @@ para.K = 10;
 save(fullfile(record_path, 'para.mat'), 'para');
 
 %% load data
-data_path = fullfile('data', para.dataset);
+
 pca_data = fullfile(save_path, 'pca.mat');
 if ~exist(pca_data, 'file')
-    % load original data
-    load(fullfile(data_path, strcat(para.dataset, '.mat')));
-    % preprocess
-    X_train = trainX; Y_train = trainY + 1;
-    X_test = testX; Y_test = testY + 1;
+    [X_train, Y_train, X_test, Y_test] = load_dataset(p.Results.dataset,para);
     % check gnd
     tmp_class = unique(Y_train)';
     if sum(tmp_class == 1:numel(tmp_class)) == numel(tmp_class)
@@ -57,8 +61,6 @@ if ~exist(pca_data, 'file')
     else
         error('input label must be a number sequence from 1 to c (c is the number of classes)');
     end
-    % default split
-    
     % preprocess
     [U, M] = pca(X_train, para.pca_preserve);
     X_train = U'*bsxfun(@minus, X_train, M);
