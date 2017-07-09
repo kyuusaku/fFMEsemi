@@ -43,7 +43,6 @@ para.K = 10;
 save(fullfile(record_path, 'para.mat'), 'para');
 
 %% load data
-
 pca_data = fullfile(save_path, 'pca.mat');
 if ~exist(pca_data, 'file')
     [X_train, Y_train, X_test, Y_test] = load_dataset(p.Results.dataset,para);
@@ -82,6 +81,16 @@ end
 
 %% compute anchor graph
 ag_data = fullfile(save_path, 'ag.mat');
+if ~exist(ag_data, 'file')
+    [~, anchor, kmeans_time] = k_means(X_train, para.num_anchor);
+    [B, rL, ag_time] = flann_AnchorGraph(X_train, anchor, para.s, 1, para.cn);
+    save(ag_data, 'B', 'rL', 'ag_time', 'kmeans_time', 'anchor');
+else
+    load(ag_data);
+end
+
+%% compute efficient anchor graph
+eag_data = fullfile(save_path, 'eag.mat');
 if ~exist(ag_data, 'file')
     [~, anchor, kmeans_time] = k_means(X_train, para.num_anchor);
     [B, rL, ag_time] = flann_AnchorGraph(X_train, anchor, para.s, 1, para.cn);

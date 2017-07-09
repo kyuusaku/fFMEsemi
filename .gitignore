@@ -1,3 +1,5 @@
 result/
 data/
 prepare/
+*.m~
+.DS_Store
