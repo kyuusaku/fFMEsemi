@@ -40,7 +40,7 @@ para.s = 3; % anchor
 para.cn = 10;
 para.num_anchor = 1000;
 para.knn = 3;
-para.beta = 10;
+para.beta = [1e-3;1e-2;1e-1;1;1e1;1e2;1e3];
 para.K = 10;
 save(fullfile(record_path, 'para.mat'), 'para');
 
@@ -95,12 +95,17 @@ end
 eag_data = fullfile(save_path, 'eag.mat');
 if ~exist(eag_data, 'file')
     [~, anchor, kmeans_time] = k_means(X_train, para.num_anchor);
-    tic;[Z] = FLAE(anchor', X_train', para.knn, para.beta);
-    % Normalized graph Laplacian
-    W=Z'*Z;
-    Dt=diag(sum(W).^(-1/2));
-    S=Dt*W*Dt;
-    rLz=eye(para.num_anchor,para.num_anchor)-S; eag_time = toc;
+    Z = cell(numel(para.beta), 1);
+    rLz = cell(numel(para.beta), 1);
+    eag_time = zeros(numel(para.beta), 1);
+    for i = 1:numel(para.beta)
+        tic;[Z{i}] = FLAE(anchor', X_train', para.knn, para.beta(i));
+        % Normalized graph Laplacian
+        W=Z{i}'*Z{i};
+        Dt=diag(sum(W).^(-1/2));
+        S=Dt*W*Dt;
+        rLz{i}=eye(para.num_anchor,para.num_anchor)-S; eag_time(i) = toc;
+    end
     save(eag_data, 'Z', 'rLz', 'eag_time', 'kmeans_time', 'anchor');
 else
     load(eag_data);
@@ -146,7 +151,7 @@ celldisp(result_AGR_para_best);
 best_gamma = [];
 eagr_data_para_best = fullfile(record_path, 'result_EAGR_para_best.mat');
 if ~exist(eagr_data_para_best, 'file')
-    result_EAGR_para_best = run_EAGR_para(Y_train, Z, rLz, label, best_gamma);
+    result_EAGR_para_best = run_EAGR_para(Y_train, Z, rLz, label, best_gamma, para);
     save(eagr_data_para_best, 'result_EAGR_para_best');
 else
     load(eagr_data_para_best);
