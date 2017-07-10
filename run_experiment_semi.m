@@ -95,7 +95,7 @@ end
 eag_data = fullfile(save_path, 'eag.mat');
 if ~exist(eag_data, 'file')
     [~, anchor, kmeans_time] = k_means(X_train, para.num_anchor);
-    tic;[Z] = FLAE(anchor, X_train, para.knn, para.beta);
+    tic;[Z] = FLAE(anchor', X_train', para.knn, para.beta);
     % Normalized graph Laplacian
     W=Z'*Z;
     Dt=diag(sum(W).^(-1/2));
