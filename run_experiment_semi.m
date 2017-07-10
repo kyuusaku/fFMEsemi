@@ -39,6 +39,8 @@ para.p = [o];% number of label per class
 para.s = 3; % anchor
 para.cn = 10;
 para.num_anchor = 1000;
+para.knn = 3;
+para.beta = 1;
 para.K = 10;
 save(fullfile(record_path, 'para.mat'), 'para');
 
@@ -91,12 +93,17 @@ end
 
 %% compute efficient anchor graph
 eag_data = fullfile(save_path, 'eag.mat');
-if ~exist(ag_data, 'file')
+if ~exist(eag_data, 'file')
     [~, anchor, kmeans_time] = k_means(X_train, para.num_anchor);
-    [B, rL, ag_time] = flann_AnchorGraph(X_train, anchor, para.s, 1, para.cn);
-    save(ag_data, 'B', 'rL', 'ag_time', 'kmeans_time', 'anchor');
+    tic;[Z] = FLAE(anchor, X_train, para.knn, para.beta);
+    % Normalized graph Laplacian
+    W=Z'*Z;
+    Dt=diag(sum(W).^(-1/2));
+    S=Dt*W*Dt;
+    rLz=eye(para.num_anchor,para.num_anchor)-S; eag_time = toc;
+    save(eag_data, 'Z', 'rLz', 'eag_time', 'kmeans_time', 'anchor');
 else
-    load(ag_data);
+    load(eag_data);
 end
 
 %% run fast FME
