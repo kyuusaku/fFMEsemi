@@ -140,6 +140,18 @@ if ~exist(agr_data_para_best, 'file')
 else
     load(agr_data_para_best);
 end
+celldisp(result_AGR_para_best);
+
+%% run EAGR
+best_gamma = [];
+eagr_data_para_best = fullfile(record_path, 'result_EAGR_para_best.mat');
+if ~exist(eagr_data_para_best, 'file')
+    result_EAGR_para_best = run_EAGR_para(Y_train, Z, rLz, label, best_gamma);
+    save(eagr_data_para_best, 'result_EAGR_para_best');
+else
+    load(eagr_data_para_best);
+end
+celldisp(result_EAGR_para_best);
 
 %% E_min
 emin_data = fullfile(save_path, 'E_min.mat');
