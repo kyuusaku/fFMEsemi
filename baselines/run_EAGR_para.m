@@ -35,7 +35,7 @@ for pgamma = 1 : n_gamma
     for t = 1 : iter
         label_ind = find(label(:,t));
         tic;
-        [~, ~, acc] = EAGReg(Z, rLz, Y_train', label_ind, gamma_para(pgamma));
+        [acc] = EAGReg(Z, rLz, Y_train', label_ind, gamma_para(pgamma));
         time(pgamma, t) = toc;
         errs(pgamma, t) = 1-acc;
         % verbose
