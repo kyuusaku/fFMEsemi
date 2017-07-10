@@ -40,7 +40,7 @@ para.s = 3; % anchor
 para.cn = 10;
 para.num_anchor = 1000;
 para.knn = 3;
-para.beta = 1;
+para.beta = 10;
 para.K = 10;
 save(fullfile(record_path, 'para.mat'), 'para');
 
