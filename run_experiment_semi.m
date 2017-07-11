@@ -161,7 +161,7 @@ celldisp(result_EAGR_para_best);
 %% run eFME
 mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
 gamma = mu;
-best_beta = result_EAGR_para_best.best_id(1)
+best_beta = result_EAGR_para_best{1}.best_id(1)
 efme_data_1e9_para_best = fullfile(record_path, 'result_eFME_1e9_para_best.mat');
 if ~exist(efme_data_1e9_para_best, 'file')
     result_eFME_1e9_para_best = run_eFME_semi_para(X_train, Y_train, X_test, Y_test, ...
