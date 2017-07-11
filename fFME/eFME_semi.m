@@ -1,7 +1,8 @@
-function [W, b, F] = fastFME_semi(X, B, Y, para)
+function [W, b, F] = eFME_semi(X, Z, rLz, Y, para)
 % INPUT
 %     X: f*n matrix, each colomn is a data point
-%     B: n*m matrix, sample adaptive weights
+%     Z: n*m matrix, sample adaptive weights
+%     rLz: reduced 
 %     Y: n*c matrix, class indicator matrix. 
 %        Yij=1 if xi is labeled as j, Yij=0 otherwise
 %     para: parameters
@@ -17,19 +18,18 @@ function [W, b, F] = fastFME_semi(X, B, Y, para)
 [dim,n] = size(X);
 
 Xc = bsxfun(@minus, X, mean(X,2));
-A = Xc * Xc' + para.gamma .* eye(dim);
+XcZ = Xc * Z;
+W = (Xc * Xc' + para.gamma .* eye(dim)) \ XcZ;
 
 u = para.uu .* ones(n,1);
 u(sum(Y,2) == 1) = para.ul;
 U = spdiags(u,0,n,n);
+UI = spdiags((u + para.mu),0,n,n);
 
-V_inv = spdiags((u + (para.mu + 1) .* ones(n,1)).^-1, 0, n, n);
-G = [B ones(n,1) Xc'];
-Sigma = diag(sum(B));
-M_inv = blkdiag(Sigma, n/para.mu, A ./ para.mu);
-VUY = V_inv * U * Y;
+Z1 = ones(1,n) * Z;
 
-F = VUY + ...
-    V_inv * (G * (full(M_inv - G' * V_inv * G) \ (G' * VUY)));
-W = A \ (Xc * F);
+A = (rLz + Z'*UI*Z - (para.mu/n)*(Z1')*Z1 - para.mu*XcZ'*W) \ (Z'*U*Y);
+
+F = Z*A;
+W = W*A;
 b = 1/n*(sum(F,1)' - W'*(X*ones(n,1)));
