@@ -11,3 +11,13 @@ run_experiment_semi('norb',8)
 run_experiment_semi('norb',10)
 %%
 run_experiment_semi('norb',15)
+%%
+run_experiment_semi('rcv1',1)
+%%
+run_experiment_semi('rcv1',5)
+%%
+run_experiment_semi('rcv1',8)
+%%
+run_experiment_semi('rcv1',10)
+%%
+run_experiment_semi('rcv1',15)

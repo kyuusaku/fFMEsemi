@@ -11,4 +11,33 @@ if strcmp(dataset, 'norb')
     % preprocess
     X_train = trainX; Y_train = trainY + 1;
     X_test = testX; Y_test = testY + 1;
+    % preprocess
+    [U, M] = pca(X_train, para.pca_preserve);
+    X_train = U'*bsxfun(@minus, X_train, M);
+    X_test = U'*bsxfun(@minus, X_test, M);
+end
+
+if strcmp(dataset, 'rcv1')
+    % load original data
+    load(fullfile(data_path, strcat(para.dataset, '.mat')));
+    fea = fea';
+    % default split
+    split = choose_each_class(gnd, 0.8, 1);
+    % preprocess
+    X_train = fea(:, split); Y_train = gnd(split);
+    X_test = fea(:, ~split); Y_test = gnd(~split);
+    clear fea gnd split;
+    X_pca = X_train(:, randsample(1:numel(Y_train), 10000));
+    X_pca = full(X_pca);
+    [U, M] = pca(X_pca, para.pca_preserve); clear X_pca;
+    X_train_tmp = zeros(para.pca_preserve, size(X_train, 2));
+    for i = 1 : size(X_train, 2)
+        X_train_tmp(:, i) = U' * (X_train(:,i) - M);
+    end
+    X_train = X_train_tmp; clear X_train_tmp;
+    X_test_tmp = zeros(para.pca_preserve, size(X_test, 2));
+    for i = 1 : size(X_test, 2)
+        X_test_tmp(:, i) = U' * (X_test(:,i) - M);
+    end
+    X_test = X_test_tmp; clear X_test_tmp;
 end

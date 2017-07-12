@@ -61,11 +61,6 @@ if ~exist(pca_data, 'file')
     else
         error('input label must be a number sequence from 1 to c (c is the number of classes)');
     end
-    % preprocess
-    [U, M] = pca(X_train, para.pca_preserve);
-    X_train = U'*bsxfun(@minus, X_train, M);
-    X_test = U'*bsxfun(@minus, X_test, M);
-    clear U M;
     % save
     save(pca_data, 'X_train', 'Y_train', 'X_test', 'Y_test');
 else

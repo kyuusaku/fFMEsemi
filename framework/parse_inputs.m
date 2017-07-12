@@ -2,7 +2,7 @@ function p = parse_inputs()
 
 p = inputParser;
 
-validDataset = {'norb'};
+validDataset = {'norb','rcv1'};
 checkDataset = @(x) any(validatestring(x,validDataset));
 
 defaultSystem = 'linux';
