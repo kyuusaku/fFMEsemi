@@ -39,7 +39,7 @@ for pgamma = 1 : n_gamma
         time(pgamma, t) = toc;
         errs(pgamma, t) = 1-acc;
         % verbose
-        fprintf('run_EAGR: gamma = %e, t = %d, accuracy = %f\n', ...
+        fprintf('run_HAGR: gamma = %e, t = %d, accuracy = %f\n', ...
             gamma_para(pgamma), t, 100*acc);
     end
 end
