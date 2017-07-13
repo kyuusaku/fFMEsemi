@@ -24,7 +24,7 @@ if verbose
 end
 
 tic;
-[pos, val] = flann_search(kdtree, TrainData, s, search_params);
+[pos, val] = flann_search(kdtree, Data, s, search_params);
 val = val.^2';
 pos = pos';
 flann_free_index(kdtree);
