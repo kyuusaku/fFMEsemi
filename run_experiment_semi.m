@@ -164,6 +164,17 @@ else
 end
 celldisp(result_EAGR_para_best);
 
+%% run HAGR
+best_gamma = [];
+hagr_data_para_best = fullfile(record_path, 'result_HAGR_para_best.mat');
+if ~exist(hagr_data_para_best, 'file')
+    result_HAGR_para_best = run_HAGR_para(Y_train, ZH, rLh, label, best_gamma);
+    save(hagr_data_para_best, 'result_HAGR_para_best');
+else
+    load(hagr_data_para_best);
+end
+celldisp(result_HAGR_para_best);
+
 %% run eFME
 mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
 gamma = mu;
