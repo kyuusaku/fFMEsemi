@@ -41,6 +41,7 @@ para.cn = 10;
 para.num_anchor = 1000;
 para.knn = 3;
 para.beta = [1e-3;1e-2;1e-1;1;1e1;1e2;1e3];
+para.num_anchors = get_num_anchors(p.Results.dataset);
 para.K = 10;
 save(fullfile(record_path, 'para.mat'), 'para');
 
@@ -104,6 +105,16 @@ if ~exist(eag_data, 'file')
     save(eag_data, 'Z', 'rLz', 'eag_time', 'kmeans_time', 'anchor');
 else
     load(eag_data);
+end
+
+%% compute anchor hierarchy
+hag_data = fullfile(save_path, 'hag.mat');
+if ~exist(hag_data, 'file')
+    [anchors, anchors_time] = hanchors(X_train, para.num_anchors);
+    [ZH, Z01, zh_time, rLh, rLh_time] = hag(X_train, anchors, 3);
+    save(hag_data, 'ZH', 'Z01', 'rLh', 'zh_time', 'rLh_time', 'anchors', 'anchors_time');
+else
+    load(hag_data);
 end
 
 %% run fast FME
