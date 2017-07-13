@@ -189,6 +189,32 @@ else
 end
 celldisp(result_eFME_1e9_para_best);
 
+%% run heFME
+mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
+gamma = mu;
+hefme_data_1e9_para_best = fullfile(record_path, 'result_heFME_1e9_para_best.mat');
+if ~exist(hefme_data_1e9_para_best, 'file')
+    result_heFME_1e9_para_best = run_heFME_semi_para(X_train, Y_train, X_test, Y_test, ...
+        ZH, rLh, label, 1e9, mu, gamma);
+    save(hefme_data_1e9_para_best, 'result_heFME_1e9_para_best');
+else
+    load(hefme_data_1e9_para_best);
+end
+celldisp(result_heFME_1e9_para_best);
+
+%% run hfFME
+mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
+gamma = mu;
+hffme_data_1e9_para_best = fullfile(record_path, 'result_hfFME_1e9_para_best.mat');
+if ~exist(hffme_data_1e9_para_best, 'file')
+    result_hfFME_1e9_para_best = run_hfFME_semi_para(X_train, Y_train, X_test, Y_test, ZH, label, ...
+        1e9, mu, gamma);
+    save(hffme_data_1e9_para_best, 'result_hfFME_1e9_para_best');
+else
+    load(hffme_data_1e9_para_best);
+end
+celldisp(result_hfFME_1e9_para_best);
+
 %% E_min
 emin_data = fullfile(save_path, 'E_min.mat');
 if ~exist(emin_data, 'file')

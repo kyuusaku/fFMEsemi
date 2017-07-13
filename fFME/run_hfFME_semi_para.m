@@ -1,4 +1,4 @@
-function result_fastFME = run_fastFME_semi_para(...
+function result_hfFME = run_hfFME_semi_para(...
     X_train, Y_train, X_test, Y_test, B, label, ul, mu, gamma)
 
 %% default parameters
@@ -14,15 +14,15 @@ if ~exist('gamma', 'var') || isempty(gamma)
 end
 
 %%
-fprintf('******** Runing fast FME semi ***********\n');
+fprintf('******** Runing hfFME semi ***********\n');
 
 class = unique(Y_train);
 
 np = numel(label);
-result_fastFME = cell(np, 1);
+result_hfFME = cell(np, 1);
 for i = 1 : np
     [errs, best_train, best_test, average_time] = ...
-        iner_run_fastFME_semi(B, X_train, Y_train, X_test, Y_test, class, ...
+        iner_run_hfFME_semi(B, X_train, Y_train, X_test, Y_test, class, ...
         label{i}, mu, gamma, ul, uu);
     result.accuracy = 100*(1 - errs);
     result.best_train_accuracy = [100*(1-best_train(1,1)), 100*best_train(1,2)];
@@ -34,13 +34,13 @@ for i = 1 : np
     result.average_time = average_time;
     result.p = sum(label{i});
     result.p = result.p(1);
-    result_fastFME{i} = result;
+    result_hfFME{i} = result;
     disp(result);
 end    
 fprintf('done.\n');
 end
 
-function [errs, best_train, best_test, average_time] = iner_run_fastFME_semi(B, ...
+function [errs, best_train, best_test, average_time] = iner_run_hfFME_semi(B, ...
     X_train, Y_train, X_test, Y_test, class, label, mu, gamma, ul, uu)
 n = size(X_train, 2);
 n_class = numel(class);
@@ -79,7 +79,7 @@ for pmu = 1 : n_mu
             errs(pmu, pgamma, t, 2) = mean(double(predictions ~= Y_test));
             
             % verbose
-            fprintf('run_fastFME:\n');
+            fprintf('run_hfFME:\n');
             fprintf('--- mu = %e, gamma = %e, t = %d\n', mu(pmu), gamma(pgamma), t);
             fprintf('--- unlabel = %f, test = %f\n', ...
                 100*(1-errs(pmu, pgamma, t, 1)), 100*(1-errs(pmu, pgamma, t, 2)));
