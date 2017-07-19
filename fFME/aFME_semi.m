@@ -15,18 +15,19 @@ function [W, b, F] = aFME_semi(X, Z, rLz, Y, para)
 %     b: bias vector
 %     F: soft label matrix
 
-[dim,n] = size(X);
+[dim,m] = size(X);
 
 Xc = bsxfun(@minus, X, mean(X,2));
 W = (Xc * Xc' + para.gamma .* eye(dim)) \ Xc;
 
+n = size(Y,1);
 u = para.uu .* ones(n,1);
 u(sum(Y,2) == 1) = para.ul;
 U = spdiags(u,0,n,n);
 
-A = (rLz + Z'*U*Z + para.mu*eye(n) - (para.mu/n)*ones(n,1)*ones(1,n) ...
+A = (rLz + Z'*U*Z + para.mu*eye(m) - (para.mu/m)*ones(m,1)*ones(1,m) ...
     - para.mu*Xc'*W) \ (Z'*U*Y);
 
 F = Z*A;
 W = W*A;
-b = 1/n*(sum(A,1)' - W'*(X*ones(n,1)));
+b = 1/m*(sum(A,1)' - W'*(X*ones(m,1)));
