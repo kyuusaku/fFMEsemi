@@ -12,6 +12,10 @@ if strcmp(dataset, 'rcv1')
     n = 414831;
     num_anchors = get_num(n,base,h);
 end
+if strcmp(dataset, 'mnist630k')
+    n = 503996;
+    num_anchors = get_num(n,base,h);
+end
 
 end
 
