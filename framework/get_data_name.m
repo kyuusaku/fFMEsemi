@@ -6,3 +6,6 @@ end
 if strcmp(dataset, 'rcv1')
     data_name = 'RCV1';
 end
+if strcmp(dataset, 'mnist630k')
+    data_name = 'mnist630k';
+end

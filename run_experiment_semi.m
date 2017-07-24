@@ -108,14 +108,14 @@ else
 end
 
 %% compute anchor hierarchy
-hag_data = fullfile(save_path, 'hag.mat');
-if ~exist(hag_data, 'file')
-    [anchors, anchors_time] = hanchors(X_train, para.num_anchors);
-    [ZH, Z01, zh_time, rLh, rLh_time] = hag(X_train, anchors, 3);
-    save(hag_data, 'ZH', 'Z01', 'rLh', 'zh_time', 'rLh_time', 'anchors', 'anchors_time');
-else
-    load(hag_data);
-end
+% hag_data = fullfile(save_path, 'hag.mat');
+% if ~exist(hag_data, 'file')
+%     [anchors, anchors_time] = hanchors(X_train, para.num_anchors);
+%     [ZH, Z01, zh_time, rLh, rLh_time] = hag(X_train, anchors, 3);
+%     save(hag_data, 'ZH', 'Z01', 'rLh', 'zh_time', 'rLh_time', 'anchors', 'anchors_time');
+% else
+%     load(hag_data);
+% end
 
 %% run fast FME
 best_mu = []; best_gamma = [];
@@ -165,15 +165,15 @@ end
 celldisp(result_EAGR_para_best);
 
 %% run HAGR
-best_gamma = [];
-hagr_data_para_best = fullfile(record_path, 'result_HAGR_para_best.mat');
-if ~exist(hagr_data_para_best, 'file')
-    result_HAGR_para_best = run_HAGR_para(Y_train, ZH, rLh, label, best_gamma);
-    save(hagr_data_para_best, 'result_HAGR_para_best');
-else
-    load(hagr_data_para_best);
-end
-celldisp(result_HAGR_para_best);
+% best_gamma = [];
+% hagr_data_para_best = fullfile(record_path, 'result_HAGR_para_best.mat');
+% if ~exist(hagr_data_para_best, 'file')
+%     result_HAGR_para_best = run_HAGR_para(Y_train, ZH, rLh, label, best_gamma);
+%     save(hagr_data_para_best, 'result_HAGR_para_best');
+% else
+%     load(hagr_data_para_best);
+% end
+% celldisp(result_HAGR_para_best);
 
 %% run eFME
 mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
@@ -190,18 +190,18 @@ end
 celldisp(result_eFME_1e9_para_best);
 
 %% run efFME
-mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
-gamma = mu;
-best_beta = result_EAGR_para_best{1}.best_id(1)
-effme_data_1e9_para_best = fullfile(record_path, 'result_efFME_1e9_para_best.mat');
-if ~exist(effme_data_1e9_para_best, 'file')
-    result_efFME_1e9_para_best = run_efFME_semi_para(X_train, Y_train, X_test, Y_test, ...
-        Z{best_beta}, label, 1e9, mu, gamma);
-    save(effme_data_1e9_para_best, 'result_efFME_1e9_para_best');
-else
-    load(effme_data_1e9_para_best);
-end
-celldisp(result_efFME_1e9_para_best);
+% mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
+% gamma = mu;
+% best_beta = result_EAGR_para_best{1}.best_id(1)
+% effme_data_1e9_para_best = fullfile(record_path, 'result_efFME_1e9_para_best.mat');
+% if ~exist(effme_data_1e9_para_best, 'file')
+%     result_efFME_1e9_para_best = run_efFME_semi_para(X_train, Y_train, X_test, Y_test, ...
+%         Z{best_beta}, label, 1e9, mu, gamma);
+%     save(effme_data_1e9_para_best, 'result_efFME_1e9_para_best');
+% else
+%     load(effme_data_1e9_para_best);
+% end
+% celldisp(result_efFME_1e9_para_best);
 
 %% run aFME
 mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
@@ -218,30 +218,30 @@ end
 celldisp(result_aFME_1e9_para_best);
 
 %% run heFME
-mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
-gamma = mu;
-hefme_data_1e9_para_best = fullfile(record_path, 'result_heFME_1e9_para_best.mat');
-if ~exist(hefme_data_1e9_para_best, 'file')
-    result_heFME_1e9_para_best = run_heFME_semi_para(X_train, Y_train, X_test, Y_test, ...
-        ZH, rLh, label, 1e9, mu, gamma);
-    save(hefme_data_1e9_para_best, 'result_heFME_1e9_para_best');
-else
-    load(hefme_data_1e9_para_best);
-end
-celldisp(result_heFME_1e9_para_best);
+% mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
+% gamma = mu;
+% hefme_data_1e9_para_best = fullfile(record_path, 'result_heFME_1e9_para_best.mat');
+% if ~exist(hefme_data_1e9_para_best, 'file')
+%     result_heFME_1e9_para_best = run_heFME_semi_para(X_train, Y_train, X_test, Y_test, ...
+%         ZH, rLh, label, 1e9, mu, gamma);
+%     save(hefme_data_1e9_para_best, 'result_heFME_1e9_para_best');
+% else
+%     load(hefme_data_1e9_para_best);
+% end
+% celldisp(result_heFME_1e9_para_best);
 
 %% run hfFME
-mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
-gamma = mu;
-hffme_data_1e9_para_best = fullfile(record_path, 'result_hfFME_1e9_para_best.mat');
-if ~exist(hffme_data_1e9_para_best, 'file')
-    result_hfFME_1e9_para_best = run_hfFME_semi_para(X_train, Y_train, X_test, Y_test, ZH, label, ...
-        1e9, mu, gamma);
-    save(hffme_data_1e9_para_best, 'result_hfFME_1e9_para_best');
-else
-    load(hffme_data_1e9_para_best);
-end
-celldisp(result_hfFME_1e9_para_best);
+% mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
+% gamma = mu;
+% hffme_data_1e9_para_best = fullfile(record_path, 'result_hfFME_1e9_para_best.mat');
+% if ~exist(hffme_data_1e9_para_best, 'file')
+%     result_hfFME_1e9_para_best = run_hfFME_semi_para(X_train, Y_train, X_test, Y_test, ZH, label, ...
+%         1e9, mu, gamma);
+%     save(hffme_data_1e9_para_best, 'result_hfFME_1e9_para_best');
+% else
+%     load(hffme_data_1e9_para_best);
+% end
+% celldisp(result_hfFME_1e9_para_best);
 
 %% E_min
 emin_data = fullfile(save_path, 'E_min.mat');
@@ -365,6 +365,7 @@ save(fullfile(record_path, 'ttest.mat'), 'unlabel_ttest', 'test_ttest');
 
 % display
 celldisp(result_AGR_para_best);
+celldisp(result_EAGR_para_best);
 celldisp(result_MMLP_para);
 celldisp(result_MTC_para);
 celldisp(result_NN_para);

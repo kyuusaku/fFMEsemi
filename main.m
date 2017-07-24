@@ -21,3 +21,13 @@ run_experiment_semi('rcv1',8)
 run_experiment_semi('rcv1',10)
 %%
 run_experiment_semi('rcv1',15)
+%%
+run_experiment_semi('mnist630k',1)
+%%
+run_experiment_semi('mnist630k',5)
+%%
+run_experiment_semi('mnist630k',8)
+%%
+run_experiment_semi('mnist630k',10)
+%%
+run_experiment_semi('mnist630k',15)
