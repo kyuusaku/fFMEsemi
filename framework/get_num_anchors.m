@@ -20,6 +20,10 @@ if strcmp(dataset, 'cifar10-rgb')
     n = 50000;
     num_anchors = get_num(n,base,h);
 end
+if strcmp(dataset, 'covtype')
+    n = 464810;
+    num_anchors = get_num(n,base,h);
+end
 
 end
 

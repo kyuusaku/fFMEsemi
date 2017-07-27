@@ -41,3 +41,13 @@ run_experiment_semi('cifar10-rgb',8)
 run_experiment_semi('cifar10-rgb',10)
 %%
 run_experiment_semi('cifar10-rgb',15)
+%%
+run_experiment_semi('covtype',1)
+%%
+run_experiment_semi('covtype',5)
+%%
+run_experiment_semi('covtype',8)
+%%
+run_experiment_semi('covtype',10)
+%%
+run_experiment_semi('covtype',15)

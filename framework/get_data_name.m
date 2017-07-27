@@ -12,3 +12,6 @@ end
 if strcmp(dataset, 'cifar10-rgb')
     data_name = 'cifar10';
 end
+if strcmp(dataset, 'covtype')
+    data_name = 'covtype';
+end
