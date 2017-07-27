@@ -118,16 +118,16 @@ end
 % end
 
 %% run fast FME
-best_mu = []; best_gamma = [];
-ffme_data_1_1e9_para_best = fullfile(record_path, 'result_fastFME1_1e9_para_best.mat');
-if ~exist(ffme_data_1_1e9_para_best, 'file')
-    result_fastFME1_1e9_para_best = run_fastFME_semi_para(X_train, Y_train, X_test, Y_test, B, label, ...
-        1e9, best_mu, best_gamma);
-    save(ffme_data_1_1e9_para_best, 'result_fastFME1_1e9_para_best');
-else
-    load(ffme_data_1_1e9_para_best);
-end
-celldisp(result_fastFME1_1e9_para_best);
+% best_mu = []; best_gamma = [];
+% ffme_data_1_1e9_para_best = fullfile(record_path, 'result_fastFME1_1e9_para_best.mat');
+% if ~exist(ffme_data_1_1e9_para_best, 'file')
+%     result_fastFME1_1e9_para_best = run_fastFME_semi_para(X_train, Y_train, X_test, Y_test, B, label, ...
+%         1e9, best_mu, best_gamma);
+%     save(ffme_data_1_1e9_para_best, 'result_fastFME1_1e9_para_best');
+% else
+%     load(ffme_data_1_1e9_para_best);
+% end
+% celldisp(result_fastFME1_1e9_para_best);
 
 %% run fast FME
 mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
