@@ -9,3 +9,6 @@ end
 if strcmp(dataset, 'mnist630k')
     data_name = 'mnist630k';
 end
+if strcmp(dataset, 'cifar10-rgb')
+    data_name = 'cifar10';
+end

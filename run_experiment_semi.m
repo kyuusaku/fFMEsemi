@@ -21,7 +21,7 @@ end
 
 %% para
 data_name = get_data_name(p.Results.dataset);
-save_path = ['result/' data_name '/semi'];
+save_path = ['result/' p.Results.dataset '/semi'];
 if ~exist(save_path, 'dir')
     mkdir(save_path);
 end

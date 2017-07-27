@@ -57,3 +57,16 @@ if strcmp(dataset, 'mnist630k')
     X_test = U'*bsxfun(@minus, X_test, M);
     clear U M;
 end
+
+if strcmp(dataset, 'cifar10-rgb')
+    % load original data
+    load(fullfile(data_path, strcat(para.dataset, '.mat')));
+    % preprocess
+    X_train = trainX'; Y_train = trainY;
+    X_test = testX'; Y_test = testY;
+    % preprocess
+    [U, M] = pca(X_train, para.pca_preserve);
+    X_train = U'*bsxfun(@minus, X_train, M);
+    X_test = U'*bsxfun(@minus, X_test, M);
+    clear U M;
+end
