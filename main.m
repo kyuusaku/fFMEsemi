@@ -31,3 +31,13 @@ run_experiment_semi('mnist630k',8)
 run_experiment_semi('mnist630k',10)
 %%
 run_experiment_semi('mnist630k',15)
+%%
+run_experiment_semi('cifar10-rgb',1)
+%%
+run_experiment_semi('cifar10-rgb',5)
+%%
+run_experiment_semi('cifar10-rgb',8)
+%%
+run_experiment_semi('cifar10-rgb',10)
+%%
+run_experiment_semi('cifar10-rgb',15)
