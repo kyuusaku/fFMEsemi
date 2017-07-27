@@ -24,6 +24,10 @@ if strcmp(dataset, 'covtype')
     n = 464810;
     num_anchors = get_num(n,base,h);
 end
+if strcmp(dataset, 'usps-large')
+    n = 705768;
+    num_anchors = get_num(n,base,h);
+end
 
 end
 

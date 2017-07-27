@@ -15,3 +15,6 @@ end
 if strcmp(dataset, 'covtype')
     data_name = 'covtype';
 end
+if strcmp(dataset, 'usps-large')
+    data_name = 'Extended_USPS';
+end
