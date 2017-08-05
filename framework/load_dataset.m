@@ -17,6 +17,21 @@ if strcmp(dataset, 'norb')
     X_test = U'*bsxfun(@minus, X_test, M);
 end
 
+if strcmp(dataset, 'aloi')
+    % load original data
+    load(fullfile(data_path, strcat(para.dataset, '.mat')));
+    % default split
+    split = choose_each_class(gnd, 0.8, 1);
+    % preprocess
+    X_train = fea(:, split); Y_train = gnd(split);
+    X_test = fea(:, ~split); Y_test = gnd(~split);
+    clear fea gnd split;
+    % preprocess
+    [U, M] = pca(X_train, para.pca_preserve);
+    X_train = U'*bsxfun(@minus, X_train, M);
+    X_test = U'*bsxfun(@minus, X_test, M);
+end
+
 if strcmp(dataset, 'rcv1')
     % load original data
     load(fullfile(data_path, strcat(para.dataset, '.mat')));

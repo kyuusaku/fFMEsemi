@@ -8,6 +8,10 @@ if strcmp(dataset, 'norb')
     n = 48600;
     num_anchors = get_num(n,base,h);
 end
+if strcmp(dataset, 'aloi')
+    n = 86400;
+    num_anchors = get_num(n,base,h);
+end
 if strcmp(dataset, 'rcv1')
     n = 414831;
     num_anchors = get_num(n,base,h);

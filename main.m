@@ -12,6 +12,16 @@ run_experiment_semi('norb',10)
 %%
 run_experiment_semi('norb',15)
 %%
+run_experiment_semi('aloi',1)
+%%
+run_experiment_semi('aloi',5)
+%%
+run_experiment_semi('aloi',8)
+%%
+run_experiment_semi('aloi',10)
+%%
+run_experiment_semi('aloi',15)
+%%
 run_experiment_semi('rcv1',1)
 %%
 run_experiment_semi('rcv1',5)
