@@ -52,6 +52,10 @@ run_experiment_semi('covtype',10)
 %%
 run_experiment_semi('covtype',15)
 %%
+run_experiment_semi('covtype',50)
+%%
+run_experiment_semi('covtype',100)
+%%
 run_experiment_semi('usps-large',1)
 %%
 run_experiment_semi('usps-large',5)
