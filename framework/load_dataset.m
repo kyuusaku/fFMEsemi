@@ -116,3 +116,59 @@ if strcmp(dataset, 'usps-large')
     X_test = U'*bsxfun(@minus, X_test, M);
     clear U M;
 end
+
+if strcmp(dataset, 'usps-large')
+    % load original data
+    data = load(fullfile(data_path, strcat(para.dataset, '.mat')));
+    fea = data.data'; gnd = data.label; clear data;
+    % default split
+    split = choose_each_class(gnd, 0.8, 1);
+    % preprocess
+    X_train = fea(:, split); Y_train = gnd(split);
+    X_test = fea(:, ~split); Y_test = gnd(~split);
+    clear fea gnd split;
+    [U, M] = pca(X_train, para.pca_preserve);
+    X_train = U'*bsxfun(@minus, X_train, M);
+    X_test = U'*bsxfun(@minus, X_test, M);
+    clear U M;
+end
+
+if strcmp(dataset, 'mnist-large')
+    % load original data
+    data = load(fullfile(data_path, strcat(para.dataset, '.mat')));
+    fea = data.data'; gnd = data.label; clear data;
+    % 
+    class = unique(gnd)
+    ratio = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]
+    [fea, gnd] = imbalanced_sampe(fea, gnd, class, ratio);
+    % default split
+    split = choose_each_class(gnd, 0.8, 1);
+    % preprocess
+    X_train = fea(:, split); Y_train = gnd(split);
+    X_test = fea(:, ~split); Y_test = gnd(~split);
+    clear fea gnd split;
+    [U, M] = pca(X_train, para.pca_preserve);
+    X_train = U'*bsxfun(@minus, X_train, M);
+    X_test = U'*bsxfun(@minus, X_test, M);
+    clear U M;
+end
+
+if strcmp(dataset, 'mnist-large-imbalance')
+    % load original data
+    data = load(fullfile(data_path, strcat(para.dataset, '.mat')));
+    fea = data.data'; gnd = data.label; clear data;
+    % 
+    class = unique(gnd)
+    ratio = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]
+    [fea, gnd] = imbalanced_sampe(fea, gnd, class, ratio);
+    % default split
+    split = choose_each_class(gnd, 0.8, 1);
+    % preprocess
+    X_train = fea(:, split); Y_train = gnd(split);
+    X_test = fea(:, ~split); Y_test = gnd(~split);
+    clear fea gnd split;
+    [U, M] = pca(X_train, para.pca_preserve);
+    X_train = U'*bsxfun(@minus, X_train, M);
+    X_test = U'*bsxfun(@minus, X_test, M);
+    clear U M;
+end
