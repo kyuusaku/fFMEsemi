@@ -164,8 +164,8 @@ if strcmp(dataset, 'mnist-large-imbalance')
     % default split
     split = choose_each_class(gnd, 0.8, 1);
     % preprocess
-    X_train = fea(:, split); Y_train = gnd(split);
-    X_test = fea(:, ~split); Y_test = gnd(~split);
+    X_train = double(fea(:, split)); Y_train = gnd(split);
+    X_test = double(fea(:, ~split)); Y_test = gnd(~split);
     clear fea gnd split;
     [U, M] = pca(X_train, para.pca_preserve);
     X_train = U'*bsxfun(@minus, X_train, M);
