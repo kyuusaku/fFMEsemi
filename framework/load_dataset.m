@@ -140,7 +140,7 @@ if strcmp(dataset, 'mnist-large')
     % 
     class = unique(gnd)
     ratio = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]
-    [fea, gnd] = imbalanced_sampe(fea, gnd, class, ratio);
+    [fea, gnd] = imbalanced_sample(fea, gnd, class, ratio);
     % default split
     split = choose_each_class(gnd, 0.8, 1);
     % preprocess
@@ -160,7 +160,7 @@ if strcmp(dataset, 'mnist-large-imbalance')
     % 
     class = unique(gnd)
     ratio = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]
-    [fea, gnd] = imbalanced_sampe(fea, gnd, class, ratio);
+    [fea, gnd] = imbalanced_sample(fea, gnd, class, ratio);
     % default split
     split = choose_each_class(gnd, 0.8, 1);
     % preprocess
