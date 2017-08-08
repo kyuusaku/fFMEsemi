@@ -75,3 +75,13 @@ run_experiment_semi('usps-large',8)
 run_experiment_semi('usps-large',10)
 %%
 run_experiment_semi('usps-large',15)
+%%
+run_experiment_semi('mnist-large-imbalance',1)
+%%
+run_experiment_semi('mnist-large-imbalance',5)
+%%
+run_experiment_semi('mnist-large-imbalance',8)
+%%
+run_experiment_semi('mnist-large-imbalance',10)
+%%
+run_experiment_semi('mnist-large-imbalance',15)
