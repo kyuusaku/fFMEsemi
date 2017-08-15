@@ -21,6 +21,9 @@ end
 if strcmp(dataset, 'usps-large')
     data_name = 'Extended_USPS';
 end
+if strcmp(dataset, 'usps-large-imbalance')
+    data_name = 'Extended_USPS';
+end
 if strcmp(dataset, 'mnist-large')
     data_name = 'Extended_MNIST';
 end

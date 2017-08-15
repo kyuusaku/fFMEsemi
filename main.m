@@ -34,6 +34,8 @@ run_experiment_semi('rcv1',15)
 %%
 run_experiment_semi('rcv1',50)
 %%
+run_experiment_semi('rcv1',100)
+%%
 run_experiment_semi('mnist630k',1)
 %%
 run_experiment_semi('mnist630k',5)
@@ -87,3 +89,13 @@ run_experiment_semi('mnist-large-imbalance',8)
 run_experiment_semi('mnist-large-imbalance',10)
 %%
 run_experiment_semi('mnist-large-imbalance',15)
+%%
+run_experiment_semi('usps-large-imbalance',1)
+%%
+run_experiment_semi('usps-large-imbalance',5)
+%%
+run_experiment_semi('usps-large-imbalance',8)
+%%
+run_experiment_semi('usps-large-imbalance',10)
+%%
+run_experiment_semi('usps-large-imbalance',15)

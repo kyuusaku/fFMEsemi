@@ -117,10 +117,14 @@ if strcmp(dataset, 'usps-large')
     clear U M;
 end
 
-if strcmp(dataset, 'usps-large')
+if strcmp(dataset, 'usps-large-imbalance')
     % load original data
     data = load(fullfile(data_path, strcat(para.dataset, '.mat')));
     fea = data.data'; gnd = data.label; clear data;
+    % 
+    class = unique(gnd)
+    ratio = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]
+    [fea, gnd] = imbalanced_sample(fea, gnd, class, ratio);
     % default split
     split = choose_each_class(gnd, 0.8, 1);
     % preprocess
