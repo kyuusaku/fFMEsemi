@@ -1,4 +1,4 @@
-function [Z, elapsed_time] = mmmp_weight(E, anchor, aIdx, X_train, k)
+function [Z, elapsed_time, D] = mmmp_weight(E, anchor, aIdx, X_train, k)
 
 if isempty(aIdx)
     % obtain aIdx
@@ -13,30 +13,29 @@ t_start = tic;
 n = size(X_train, 2);
 m = size(anchor, 2);
 
-Z = zeros(n, m); % init output weight
+D = zeros(n, m); % init minmax distance matrix
 
-y = zeros(n, 1); % init y
-y(aIdx) = 1:m; 
-% test a=zeros(1,5) a([2,3,4])=1:3 a=[0 1 2 3 0] a([2,4,3])=1:3 a=[0 1 3 2
-% 0]
-	
-d = inf(n, 1);
-d(aIdx) = 0;
+parfor i = 1 : m
+    y_pred = zeros(n, 1);
+    y_pred(aIdx(i)) = i;
     
-mask = zeros(n, k);
+    d = inf(n, 1);
+    d(aIdx(i)) = 0;
+
+    [num_iter, size_Q, iters] = mmlp_core(aIdx(i), E, y_pred, d, 0.9999);
     
-for i = 1:k
-    y_pred = y;
-    [num_iter, size_Q, iters] = masked_mmlp_core(aIdx, E, y_pred, d, mask, 0.9999);
-    Z(:, y_pred) = d;
-    mask(:, i) = y_pred;
-    mask(:, aIdx) = 0;
+    D(:, i) = d;
 end
 
-Z = Z ./ (max(Z, 2) * ones(1,m));
-Z = exp(-Z);
-Z = Z ./ (sum(Z, 2) * ones(1,m));
+[val, pos] = sort(D, 2);
 
-Z=sparse(Z);
+val = val(:,1:k);
+pos = pos(:,1:k);
+
+val = val ./ (max(val, 2) * ones(1,k));
+val = exp(-val);
+val = val ./ (sum(val, 2) * ones(1,k));
+
+Z = sparse(reshape(repmat(1:n, k,1), 1,[]), reshape(pos', 1,[]), reshape(val', 1,[]), n, m);
 
 elapsed_time = toc(t_start);
