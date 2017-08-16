@@ -26,6 +26,10 @@
  *  v(i):	the minimax distance from x_i to its nearest labeled node
  *  v(labeledset) should be 0
  *
+ *  mask: N-by-m matrix
+ *  mask(i,k): = 1,2,...,N the index of masked sample
+ *             = 0         is not masked
+ *
  *  thres:	a value between 0 and 1
  *			it controls how early MMLP should terminate
 */
@@ -35,11 +39,12 @@
 #define EARLY_STOPPING
 #define MEASURE_PERFORMANCE
 
-#define NUM_ARG_IN		4
+#define NUM_ARG_IN		5
 #define ARY_SEED		prhs[0]
 #define SPMAT_GRAPH		prhs[1]
 #define ARY_F			prhs[2]
 #define ARY_V			prhs[3]
+#define ARY_M           prhs[4]
 
 #ifdef MEASURE_PERFORMANCE
 	#define NUM_ARG_OUT		3
@@ -50,7 +55,7 @@
 #endif
 
 #ifdef EARLY_STOPPING
-	#define VAL_STOP_THRESHOLD		prhs[4]
+	#define VAL_STOP_THRESHOLD		prhs[5]
 #endif
 
 void mexFunction( int nlhs, mxArray *plhs[],
@@ -67,7 +72,9 @@ void mexFunction( int nlhs, mxArray *plhs[],
 	double *labeled;  /* vector of indices of labeled nodes */
 	double *f;  /* vectors of predicted labels and */
 	double *v;  /* the corresponding minimax distances */
-	size_t i, j;
+    double *m;  /* the mask matrix */
+    size_t *mr, *mc;
+	size_t i, j, k;
 
 	double *G;  /* the graph of N nodes, given by an N-by-N sparse matrix */
 	size_t *ir, *jc;  /* and some variables to access the entries in G */
@@ -101,6 +108,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
 	/* allocation and initializion */
 	f = mxGetPr(ARY_F);
 	v = mxGetPr(ARY_V);
+    m = mxGetPr(ARY_M);
 	Q = mxMalloc(N*(sizeof *Q));
 	is_in_Q = mxCalloc(N, sizeof *is_in_Q);
 
