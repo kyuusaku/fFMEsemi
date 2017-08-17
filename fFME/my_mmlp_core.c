@@ -1,15 +1,14 @@
 /*
  *  my_mmlp_core.c
  *
- *  Programmed and tested on Windows 7 64-bit and MATLAB 7.9.0 (R2009b) 64bit
  *
  *  compile
  *  -----------------------------------------------------------------------
- *  mex -largeArrayDims mmlp_core.c
+ *  mex -largeArrayDims my_mmlp_core.c
  * 
  *  usage
  *  -----------------------------------------------------------------------
- *  mmlp_core(labeledset, G, f, v, thres)
+ *  my_mmlp_core(labeledset, G, f, v, thres)
  *
  *  labeledset:	N_L-by-1 vector
  *  labeledset(i):	1,...,N  the actual node index of the i-th labeled node
@@ -167,6 +166,8 @@ void mexFunction( int nlhs, mxArray *plhs[],
 		tt = jc[i+1];
 		for (t = jc[i]; t < tt; ++t) {
 			j = ir[t];
+            
+            mexPrintf("i: %d j: %d", i, j);
 
 			/* check whether node j's label and minimax distance
 			 should be updated or not */
