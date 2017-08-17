@@ -150,7 +150,10 @@ void mexFunction( int nlhs, mxArray *plhs[],
 	while (Q_not_empty)
 	{
 		/* pop a node (say node i) from Q to propagate the label of the node */
-		if (Q_first == Q_last) {
+        /* Add condition: num_has_visited > 1, because when N_L = 1, there
+         * will be only one iter. A node i must have neighbors. Thus, after the 
+         * first propagation, the num_has_visited must larger than 1 */  
+		if (Q_first == Q_last && num_has_visited > 1) {
 			Q_not_empty = false;
 		}
 		if (Q_first < Q_max_length) {
@@ -160,6 +163,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
 			Q_first = 0;
 			i = Q[Q_max_length];
 		}
+        
 
 		/* visit each adjacent node of node i (say node j)
 		 to propagate the label assigned to node i into node j */
@@ -167,7 +171,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
 		for (t = jc[i]; t < tt; ++t) {
 			j = ir[t];
             
-            mexPrintf("i: %d j: %d", i, j);
+            /* mexPrintf("i: %d j: %d\n", i, j); */
 
 			/* check whether node j's label and minimax distance
 			 should be updated or not */
@@ -199,6 +203,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
 			if (!is_in_Q[j]) {
 				if (Q_last < Q_max_length) {
 					Q[++Q_last] = j;
+                    /* mexPrintf("Q_last: %d\n", Q_last); */
 				}
 				else {
 					Q_last = 0;
