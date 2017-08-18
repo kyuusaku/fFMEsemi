@@ -7,6 +7,6 @@ addpath(genpath('../fFME'));
 %%
 
 %%
-[aIdx, val] = find_idx(anchor, X_train);
+[aIdx, val, find_idx_time] = find_idx(anchor, X_train);
 
 %%
