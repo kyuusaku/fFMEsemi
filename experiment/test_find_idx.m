@@ -1,8 +1,8 @@
 % test_find_idx.m
 
 %%
-addpath(genpath('./baselines'));
-addpath(genpath('./fFME'));
+addpath(genpath('../baselines'));
+addpath(genpath('../fFME'));
 
 %%
 
