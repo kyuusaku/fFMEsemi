@@ -261,6 +261,51 @@ else
     load(emax_data);
 end
 
+%% compute minmax anchor graph
+mmag_data = fullfile(save_path, 'mmag.mat');
+if ~exist(mmag_data, 'file')
+    %[~, anchor, kmeans_time] = k_means(X_train, para.num_anchor);
+    [aIdx, val, find_idx_time] = find_idx(anchor, X_train);
+    [Zm, mmmp_weight_time, ~] = mmmp_weight(E_max, aIdx, para.knn);
+    % Normalized graph Laplacian
+    tic;W=Zm'*Zm;
+    Dt=diag(sum(W).^(-1/2));
+    S=Dt*W*Dt;
+    rLm=eye(para.num_anchor,para.num_anchor)-S; rLm_time = toc;
+    % Save
+    save(mmag_data, 'Zm', 'rLm', 'find_idx_time', 'mmmp_weight_time', ...
+        'rLm_time', 'kmeans_time', 'anchor');
+    clear val W Dt S;
+else
+    load(mmag_data);
+end
+
+%% run mmfFME
+mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
+gamma = mu;
+mmffme_data_1e9_para_best = fullfile(record_path, 'result_mmfFME_1e9_para_best.mat');
+if ~exist(mmffme_data_1e9_para_best, 'file')
+    result_mmfFME_1e9_para_best = run_mmfFME_semi_para(X_train, Y_train, X_test, Y_test, ...
+        Zm, label, 1e9, mu, gamma);
+    save(mmffme_data_1e9_para_best, 'result_mmfFME_1e9_para_best');
+else
+    load(mmffme_data_1e9_para_best);
+end
+celldisp(result_mmfFME_1e9_para_best);
+
+%% run aFME
+mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
+gamma = mu;
+mafme_data_1e9_para_best = fullfile(record_path, 'result_maFME_1e9_para_best.mat');
+if ~exist(mafme_data_1e9_para_best, 'file')
+    result_maFME_1e9_para_best = run_maFME_semi_para(X_train, Y_train, X_test, Y_test, anchor, ...
+        Zm, rLm, label, 1e9, mu, gamma);
+    save(mafme_data_1e9_para_best, 'result_maFME_1e9_para_best');
+else
+    load(mafme_data_1e9_para_best);
+end
+celldisp(result_maFME_1e9_para_best);
+
 %% run MMLP
 mmlp_data_para = fullfile(record_path, 'result_MMLP_min_para.mat');
 if ~exist(mmlp_data_para, 'file')
