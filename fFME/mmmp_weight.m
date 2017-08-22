@@ -7,7 +7,7 @@ m = numel(aIdx);
 
 D = zeros(n, m); % init minmax distance matrix
 
-for i = 1 : m
+parfor i = 1 : m
     y_pred = zeros(n, 1);
     y_pred(aIdx(i)) = i;
     
@@ -15,7 +15,7 @@ for i = 1 : m
     d(aIdx(i)) = 0;
 
     [num_iter, size_Q, iters] = my_mmlp_core(aIdx(i), E, y_pred, d);%, 0.9999);
-    fprintf('%d/%d num_iter:%d\n', i, m, num_iter);
+%     fprintf('%d/%d num_iter:%d\n', i, m, num_iter);
     
     D(:, i) = d;
 end
