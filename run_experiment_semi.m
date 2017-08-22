@@ -369,6 +369,7 @@ X_AGR = result_AGR_para_best{1}.accuracy(result_AGR_para_best{1}.best_id, :);
 X_EAGR = result_EAGR_para_best{1}.accuracy(...
     result_EAGR_para_best{1}.best_id(1), ...
     result_EAGR_para_best{1}.best_id(2), :);
+X_EAGR = squeeze(X_EAGR)';
 X_MMLP = result_MMLP_para{1}.accuracy';
 X_MTC = result_MTC_para{1}.accuracy(result_MTC_para{1}.best_id, :);
 X_NN_u = result_NN_para{1}.accuracy(:,1)';
