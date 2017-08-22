@@ -38,7 +38,7 @@ para.pca_preserve = 50;
 para.p = [o];% number of label per class
 para.s = 3; % anchor
 para.cn = 10;
-para.num_anchor = 3000;
+para.num_anchor = 1000;
 para.knn = 3;
 para.beta = [1e-3;1e-2;1e-1;1;1e1;1e2;1e3];
 para.num_anchors = get_num_anchors(p.Results.dataset);
@@ -366,6 +366,9 @@ end
 %% ttest
 % Unlabel ttest 1=PVM, 2=AGR, 3=MMLP, 4=1NN, 5=LapRLS, 6=fastFME
 X_AGR = result_AGR_para_best{1}.accuracy(result_AGR_para_best{1}.best_id, :);
+X_EAGR = result_EAGR_para_best{1}.accuracy(...
+    result_EAGR_para_best{1}.best_id(1), ...
+    result_EAGR_para_best{1}.best_id(2), :);
 X_MMLP = result_MMLP_para{1}.accuracy';
 X_MTC = result_MTC_para{1}.accuracy(result_MTC_para{1}.best_id, :);
 X_NN_u = result_NN_para{1}.accuracy(:,1)';
@@ -378,7 +381,16 @@ X_fastFME_u = result_fastFME1_1e9_para_best{1}.accuracy(...
     result_fastFME1_1e9_para_best{1}.best_train_para_id(1), ...
     result_fastFME1_1e9_para_best{1}.best_train_para_id(2), :, 1);
 X_fastFME_u = squeeze(X_fastFME_u)';
-X_unlabel = {X_AGR; X_MMLP; X_MTC; X_NN_u; X_LapRLS_u; X_fastFME_u};
+X_efFME_u = result_efFME_1e9_para_best{1}.accuracy(...
+    result_efFME_1e9_para_best{1}.best_train_para_id(1), ...
+    result_efFME_1e9_para_best{1}.best_train_para_id(2), :, 1);
+X_efFME_u = squeeze(X_efFME_u)';
+X_aFME_u = result_aFME_1e9_para_best{1}.accuracy(...
+    result_aFME_1e9_para_best{1}.best_train_para_id(1), ...
+    result_aFME_1e9_para_best{1}.best_train_para_id(2), :, 1);
+X_aFME_u = squeeze(X_aFME_u)';
+X_unlabel = {X_AGR; X_EAGR; X_MMLP; X_MTC; X_NN_u; X_LapRLS_u; X_fastFME_u; ...
+    X_efFME_u; X_aFME_u};
 unlabel_ttest = zeros(numel(X_unlabel), numel(X_unlabel), 2);
 for i = 1 : numel(X_unlabel)
     for j = 1 : numel(X_unlabel)
@@ -397,7 +409,15 @@ X_fastFME_t = result_fastFME1_1e9_para_best{1}.accuracy(...
     result_fastFME1_1e9_para_best{1}.best_test_para_id(1), ...
     result_fastFME1_1e9_para_best{1}.best_test_para_id(2), :, 2);
 X_fastFME_t = squeeze(X_fastFME_t)';
-X_test = {X_NN_t; X_LapRLS_t; X_fastFME_t};
+X_efFME_t = result_efFME_1e9_para_best{1}.accuracy(...
+    result_efFME_1e9_para_best{1}.best_test_para_id(1), ...
+    result_efFME_1e9_para_best{1}.best_test_para_id(2), :, 2);
+X_efFME_t = squeeze(X_efFME_t)';
+X_aFME_t = result_aFME_1e9_para_best{1}.accuracy(...
+    result_aFME_1e9_para_best{1}.best_test_para_id(1), ...
+    result_aFME_1e9_para_best{1}.best_test_para_id(2), :, 1);
+X_aFME_t = squeeze(X_aFME_t)';
+X_test = {X_NN_t; X_LapRLS_t; X_fastFME_t; X_efFME_t; X_aFME_t};
 test_ttest = zeros(numel(X_test), numel(X_test), 2);
 for i = 1 : numel(X_test)
     for j = 1 : numel(X_test)
@@ -416,5 +436,7 @@ celldisp(result_MTC_para);
 celldisp(result_NN_para);
 celldisp(result_LapRLS2_para_best);
 celldisp(result_fastFME1_1e9_para_best);
+celldisp(result_efFME_1e9_para_best);
+celldisp(result_aFME_1e9_para_best);
 unlabel_ttest
 test_ttest
