@@ -18,6 +18,8 @@ para.p = 1;% label number of each class
 para.s = 3; % anchor
 para.cn = 10;
 para.num_anchor = 1000;
+para.knn = 3;
+para.beta = [1e-3;1e-2;1e-1;1;1e1;1e2;1e3];
 save(fullfile(record_path, 'para.mat'), 'para');
 
 %% random data
