@@ -34,6 +34,8 @@ para.p = [10];% label number of each class
 para.s = 3; % anchor
 para.cn = 10;
 para.num_anchor = 1000;
+para.beta = 1;
+para.knn = 3;
 
 %%
 [fea, gnd] = make_classification(60000, 50, 10);
@@ -90,6 +92,40 @@ save(fullfile(record_path, 'ags.mat'), 'ags');
 
 %%
 load(fullfile(record_path, 'ags.mat'));
+
+%%
+eags = cell(numel(num_samples), 5);
+for i = 1 : numel(num_samples)
+    X_tmp = samples{i,1};
+    
+    anchor = ags{i,5};
+    kmeans_time = ags{i,4};
+
+    tic;
+    [Z] = FLAE(anchor', X_train', para.knn, para.beta(i));    
+    W=Z'*Z; % Normalized graph Laplacian
+    Dt=diag(sum(W).^(-1/2));
+    S=Dt*W*Dt;
+    rLz=eye(para.num_anchor,para.num_anchor)-S; 
+    eag_time = toc;
+    
+    save(eag_data, 'Z', 'rLz', 'eag_time', 'kmeans_time', 'anchor');
+    
+    eags{i,1} = Z;
+    eags{i,2} = rLz;
+    eags{i,3} = eag_time;
+    eags{i,4} = kmeans_time;
+    eags{i,5} = anchor;
+    
+    fprintf('EAG: num=%d, kmeans_time=%f, eag_time=%f\n', ...
+            num_samples(i), kmeans_time, eag_time);
+end
+
+%%
+save(fullfile(record_path, 'eags.mat'), 'eags');
+
+%%
+load(fullfile(record_path, 'eags.mat'));
 
 %%
 lgs = cell(numel(num_samples), 12);
