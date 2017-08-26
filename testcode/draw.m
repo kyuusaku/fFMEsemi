@@ -75,7 +75,7 @@ print(gcf,'-dpng',fullfile(record_path, 'agr.png'));
 % run EAGR
 best_beta = result_EAGR_para_best{1}.best_id(1)
 [~, F] = EAGReg(Z{best_beta}, rLz{best_beta}, Y_train', label_ind, ...
-    result_EAGR_para_best{1}.best_para);
+    result_EAGR_para_best{1}.best_para(2));
 
 figure;
 gscatter(X_train(1,:)', X_train(2,:)', F, 'rc', 'x.');
