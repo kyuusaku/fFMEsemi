@@ -63,7 +63,7 @@ else
 end
 
 %% compute efficient anchor graph
-eag_data = fullfile(save_path, 'eag.mat');
+eag_data = fullfile(record_path, 'eag.mat');
 if ~exist(eag_data, 'file')
     %[~, anchor, kmeans_time] = k_means(X_train, para.num_anchor);
     Z = cell(numel(para.beta), 1);
