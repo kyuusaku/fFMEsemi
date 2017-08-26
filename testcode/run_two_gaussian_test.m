@@ -70,8 +70,8 @@ for i = 1:numel(std)
     nn_test(i) = result_NN_para{1}.best_test_accuracy(1);
     laprls_test(i) = result_LapRLS2_para_best{1}.best_test_accuracy(1);
     ffme_test(i) = result_fastFME1_1e9_para_best{1}.best_test_accuracy(1);
-    effme_train(i) = result_efFME_1e9_para_best{1}.best_test_accuracy(1);
-    afme_train(i) = result_aFME_1e9_para_best{1}.best_test_accuracy(1);
+    effme_test(i) = result_efFME_1e9_para_best{1}.best_test_accuracy(1);
+    afme_test(i) = result_aFME_1e9_para_best{1}.best_test_accuracy(1);
 end
 
 h=figure(1);
