@@ -350,6 +350,24 @@ save(fullfile(record_path, 'agr.mat'), 'AGR_time');
 load(fullfile(record_path, 'agr.mat'));
 
 %%
+EAGR_time = zeros(numel(num_samples), 20);
+for i = 1 : numel(num_samples)
+    Y_tmp = samples{i,2};
+    Z_tmp = eags{i,1};
+    rLz_tmp = eags{i,2};
+    l_tmp = labels{i}{1};
+    for t = 1 : 20
+        label_ind = find(l_tmp(:,t));
+        tic;
+        [acc, F] = EAGReg(Z_tmp, rLz_tmp, Y_train', label_ind, 1);
+        EAGR_time(i, t) = toc;
+        fprintf('EAGR: num=%d, t=%d, time=%f\n', ...
+            num_samples(i), t, EAGR_time(i, t));
+    end
+end
+save(fullfile(record_path, 'eagr.mat'), 'EAGR_time');
+
+%%
 MMLP_time = zeros(numel(num_samples), 20);
 for i = 1 : numel(num_samples)
     X_tmp = samples{i,1};
