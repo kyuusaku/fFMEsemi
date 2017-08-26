@@ -76,23 +76,24 @@ end
 
 h=figure(1);
 m_size = 10;
+f_size = 20;
 subplot(1,2,1);
 plot(std,agr_train, '-.c', 'MarkerSize',m_size);hold on;
-plot(std,eagr_train, '--c*', 'MarkerSize',m_size);hold on;
+plot(std,eagr_train, '--co', 'MarkerSize',m_size);hold on;
 plot(std,mmlp_train, '--m<', 'MarkerSize',m_size);hold on;
 plot(std,mtc_train, '--m>', 'MarkerSize',m_size);hold on;
-plot(std,nn_train, '--ko', 'MarkerSize',m_size);hold on;
+plot(std,nn_train, '--k*', 'MarkerSize',m_size);hold on;
 plot(std,laprls_train, '--bs', 'MarkerSize',m_size);hold on;
 %plot(std,ffme_train, '-rd', 'LineWidth', 2, 'MarkerSize',m_size);hold on;
 plot(std,effme_train, '-rd', 'LineWidth', 2, 'MarkerSize',m_size);hold on;
 plot(std,afme_train, '-r^', 'LineWidth', 2, 'MarkerSize',m_size);hold on;
 legend('AGR','EAGR','MMLP','MTC','NN','LapRLS/L','f-FME','a-FME',...
     'Location','SouthWest');
-set(gca,'FontSize',14);
+set(gca,'FontSize',f_size);
 xlabel('variance of the distribution');
 ylabel('Unlabel accuracy');
 subplot(1,2,2);
-plot(std,nn_test, '--ko', 'MarkerSize',m_size);hold on;
+plot(std,nn_test, '--k*', 'MarkerSize',m_size);hold on;
 plot(std,laprls_test, '--bs', 'MarkerSize',m_size);hold on;
 %plot(std,ffme_test, '-rd', 'LineWidth', 2, 'MarkerSize',m_size);hold on;
 plot(std,effme_test, '-rd', 'LineWidth', 2, 'MarkerSize',m_size);hold on;
@@ -101,8 +102,8 @@ legend('NN','LapRLS/L','f-FME','a-FME',...
     'Location','SouthWest');
 %set(gca, 'XTick', std);
 %set(gca, 'XTickLabel', {'3,750','7,500','15,000','30,000','60,000'});
-%set(gca, 'YTick', 0:6:33, 'YLim', [-1,33]);
-set(gca,'FontSize',14);
+set(gca,'YLim',[75,100]);
+set(gca,'FontSize',f_size);
 %grid on;
 xlabel('variance of the distribution');
 ylabel('Test accuracy');
