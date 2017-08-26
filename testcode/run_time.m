@@ -489,3 +489,60 @@ save(fullfile(record_path, 'ffme.mat'), 'fFME_time');
 
 %%
 load(fullfile(record_path, 'ffme.mat'));
+
+%%
+efFME_time = zeros(numel(num_samples), 20);
+p.ul = 1e9;
+p.uu = 0;
+p.mu = 1e-9;
+p.gamma = 1e-9;
+for i = 1 : numel(num_samples)
+    X_tmp = samples{i,1};
+    Y_tmp = samples{i,2};
+    Z_tmp = eags{i,1};
+    l_tmp = labels{i}{1};
+    for t = 1 : 20
+        tic;
+        label_ind = find(l_tmp(:,t));
+        Y = zeros(num_samples(i), n_class);
+        for cc = 1 : n_class
+            cc_ind = find(Y_tmp(label_ind) == class(cc));
+            Y(label_ind(cc_ind),cc) = 1;
+        end
+        Y = sparse(Y);
+        [W, b, F_train] = fastFME_semi(X_tmp, Z_tmp, Y, p);
+        efFME_time(i, t) = toc;
+        fprintf('efFME: num=%d, t=%d, time=%f\n', ...
+            num_samples(i), t, efFME_time(i, t));
+    end
+end
+save(fullfile(record_path, 'effme.mat'), 'efFME_time');
+
+%%
+aFME_time = zeros(numel(num_samples), 20);
+p.ul = 1e9;
+p.uu = 0;
+p.mu = 1e-9;
+p.gamma = 1e-9;
+for i = 1 : numel(num_samples)
+    anchor = eags{i,5};
+    Y_tmp = samples{i,2};
+    Z_tmp = eags{i,1};
+    rLz_tmp = eags{i,2};
+    l_tmp = labels{i}{1};
+    for t = 1 : 20
+        tic;
+        label_ind = find(l_tmp(:,t));
+        Y = zeros(num_samples(i), n_class);
+        for cc = 1 : n_class
+            cc_ind = find(Y_tmp(label_ind) == class(cc));
+            Y(label_ind(cc_ind),cc) = 1;
+        end
+        Y = sparse(Y);
+        [~, ~, F_train] = aFME_semi(anchor, Z_tmp, rLz_tmp, Y, p);
+        aFME_time(i, t) = toc;
+        fprintf('aFME: num=%d, t=%d, time=%f\n', ...
+            num_samples(i), t, aFME_time(i, t));
+    end
+end
+save(fullfile(record_path, 'afme.mat'), 'aFME_time');
