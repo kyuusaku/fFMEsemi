@@ -106,6 +106,28 @@ gscatter(X_train(1,:)', X_train(2,:)', F, 'rc', 'x.');
 axis off;
 print(gcf,'-dpng',fullfile(record_path, 'ffme.png'));
 
+% run efFME
+p.mu = result_efFME_1e9_para_best{1}.best_train_para(1);
+p.gamma = result_efFME_1e9_para_best{1}.best_train_para(2);
+[~, ~, F_train] = fastFME_semi(X_train, Z{best_beta}, Y, p);
+[~, F] = max(F_train,[],2);
+
+figure;
+gscatter(X_train(1,:)', X_train(2,:)', F, 'rc', 'x.');
+axis off;
+print(gcf,'-dpng',fullfile(record_path, 'effme.png'));
+
+% run aFME
+p.mu = result_aFME_1e9_para_best{1}.best_train_para(1);
+p.gamma = result_aFME_1e9_para_best{1}.best_train_para(2);
+[~, ~, F_train] = aFME_semi(anchor, Z{best_beta}, rLz{best_beta}, Y, p);
+[~, F] = max(F_train,[],2);
+
+figure;
+gscatter(X_train(1,:)', X_train(2,:)', F, 'rc', 'x.');
+axis off;
+print(gcf,'-dpng',fullfile(record_path, 'afme.png'));
+
 % run nn
 unlabel_ind = find(~label{1}(:,t));
 label_ind = find(label{1}(:,t));
