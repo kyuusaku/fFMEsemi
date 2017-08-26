@@ -1,4 +1,4 @@
-function [acc] = EAGReg(Z, rL, label, label_index,gamma)
+function [acc, output] = EAGReg(Z, rL, label, label_index,gamma)
 
 if ~exist('gamma', 'var') || isempty(gamma),
     gamma = 1;

@@ -13,8 +13,14 @@ label_data = fullfile(record_path, 'label.mat');
 load(label_data);
 ffme_data_1_1e9_para_best = fullfile(record_path, 'result_fastFME1_1e9_para_best2.mat');
 load(ffme_data_1_1e9_para_best);
+effme_data_1e9_para_best = fullfile(record_path, 'result_efFME_1e9_para_best.mat');
+load(effme_data_1e9_para_best);
+afme_data_1e9_para_best = fullfile(record_path, 'result_aFME_1e9_para_best.mat');
+load(afme_data_1e9_para_best);
 agr_data_para_best = fullfile(record_path, 'result_AGR_para_best.mat');
 load(agr_data_para_best);
+eagr_data_para_best = fullfile(record_path, 'result_EAGR_para_best.mat');
+load(eagr_data_para_best);
 mmlp_data_para = fullfile(record_path, 'result_MMLP_min_para.mat');
 load(mmlp_data_para);
 mmlp_data_para = fullfile(record_path, 'result_MMLP_max_para.mat');
@@ -34,6 +40,8 @@ load(laprls_data2_para_best);
 % load graphs
 ag_data = fullfile(record_path, 'ag.mat');
 load(ag_data);
+eag_data = fullfile(record_path, 'eag.mat');
+load(eag_data);
 emin_data = fullfile(record_path, 'E_min.mat');
 load(emin_data);
 emax_data = fullfile(record_path, 'E_max.mat');
@@ -54,7 +62,8 @@ print(gcf,'-dpng',fullfile(record_path, 'gt.png'));
 %%
 % run AGR
 label_ind = find(label{1}(:,t));
-[F, ~, e] = AnchorGraphReg(B, rL, Y_train', label_ind, 1);
+[F, ~, e] = AnchorGraphReg(B, rL, Y_train', label_ind, ...
+    result_AGR_para_best{1}.best_para);
 F1 = F*diag(sum(F).^-1);
 [~, F] = max(F1,[],2);
         
@@ -62,6 +71,16 @@ figure;
 gscatter(X_train(1,:)', X_train(2,:)', F, 'rc', 'x.');
 axis off;
 print(gcf,'-dpng',fullfile(record_path, 'agr.png'));
+
+% run EAGR
+best_beta = result_EAGR_para_best{1}.best_id(1)
+[~, F] = EAGReg(Z{best_beta}, rLz{best_beta}, Y_train', label_ind, ...
+    result_EAGR_para_best{1}.best_para);
+
+figure;
+gscatter(X_train(1,:)', X_train(2,:)', F, 'rc', 'x.');
+axis off;
+print(gcf,'-dpng',fullfile(record_path, 'eagr.png'));
 
 % run fFME
 unlabel_ind = find(~label{1}(:,t));
