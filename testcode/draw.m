@@ -49,7 +49,8 @@ load(emax_data);
 
 
 %%
-t=4;
+close all;
+t=14;
 gscatter(X_train(1,:)', X_train(2,:)', Y_train, 'rc', 'x.');
 hold on;
 [r, c] = find(label{1}(:,t));

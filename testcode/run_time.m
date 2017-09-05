@@ -102,7 +102,7 @@ for i = 1 : numel(num_samples)
     kmeans_time = ags{i,4};
 
     tic;
-    [Z] = FLAE(anchor', X_train', para.knn, para.beta(i));    
+    [Z] = FLAE(anchor', X_tmp', para.knn, para.beta);    
     W=Z'*Z; % Normalized graph Laplacian
     Dt=diag(sum(W).^(-1/2));
     S=Dt*W*Dt;
@@ -257,7 +257,7 @@ for i = 1 : numel(num_samples)
     end
 end
 
-%%
+%
 save(fullfile(record_path, 'fme_ver.mat'), 'FME_time_ver');
 
 %%
@@ -342,8 +342,7 @@ for i = 1 : numel(num_samples)
             num_samples(i), t, AGR_time(i, t));
     end
 end
-
-%%
+%
 save(fullfile(record_path, 'agr.mat'), 'AGR_time');
 
 %%
@@ -359,7 +358,7 @@ for i = 1 : numel(num_samples)
     for t = 1 : 20
         label_ind = find(l_tmp(:,t));
         tic;
-        [acc, F] = EAGReg(Z_tmp, rLz_tmp, Y_train', label_ind, 1);
+        [acc, F] = EAGReg(Z_tmp, rLz_tmp, Y_tmp', label_ind, 1);
         EAGR_time(i, t) = toc;
         fprintf('EAGR: num=%d, t=%d, time=%f\n', ...
             num_samples(i), t, EAGR_time(i, t));
@@ -382,7 +381,7 @@ for i = 1 : numel(num_samples)
     end
 end
 
-%%
+%
 save(fullfile(record_path, 'mmlp.mat'), 'MMLP_time');
 
 %%
@@ -409,7 +408,7 @@ for i = 1 : numel(num_samples)
     end
 end
 
-%%
+%
 save(fullfile(record_path, 'mtc.mat'), 'MTC_time');
 
 %%
@@ -446,12 +445,12 @@ for i = 1 : numel(num_samples)
         b = 1/nLabel*(sum(YLabel,1)' - W'*(feaLabel*ones(nLabel,1)));
         
         LAPRLS_time(i, t) = toc;
-        fprintf('MTC: num=%d, t=%d, time=%f\n', ...
+        fprintf('laprls: num=%d, t=%d, time=%f\n', ...
             num_samples(i), t, LAPRLS_time(i, t));
     end
 end
 
-%%
+%
 save(fullfile(record_path, 'laprls.mat'), 'LAPRLS_time');
 
 %%
@@ -484,7 +483,7 @@ for i = 1 : numel(num_samples)
     end
 end
 
-%%
+%
 save(fullfile(record_path, 'ffme.mat'), 'fFME_time');
 
 %%

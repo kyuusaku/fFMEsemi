@@ -74,6 +74,7 @@ for i = 1:numel(std)
     afme_test(i) = result_aFME_1e9_para_best{1}.best_test_accuracy(1);
 end
 
+%%
 h1=figure(1);
 m_size = 10;
 f_size = 24;
@@ -90,10 +91,12 @@ plot(std,afme_train, '-r^', 'LineWidth', 2, 'MarkerSize',m_size);hold on;
 legend('AGR','EAGR','MMLP','MTC','NN','LapRLS/L','f-FME','a-FME',...
     'Location','SouthWest');
 set(gca,'YLim',[75,100]);
-xlabel('Variance of the distribution','FontSize',f_size);
-ylabel('Unlabel accuracy','FontSize',f_size);
+xlabel('Variance of the distribution');
+ylabel('Unlabel accuracy');
+set(get(gca,'XLabel'),'FontSize',40);
 print(h1,'-dpng',fullfile(save_path, 'g-unlabel.png'));
 
+%%
 h2=figure(2);
 %subplot(1,2,2);
 plot(std,nn_test, '--k*', 'MarkerSize',m_size);hold on;
@@ -107,8 +110,8 @@ legend('NN','LapRLS/L','f-FME','a-FME',...
 %set(gca, 'XTickLabel', {'3,750','7,500','15,000','30,000','60,000'});
 set(gca,'YLim',[75,100]);
 %grid on;
-xlabel('Variance of the distribution','FontSize',f_size);
-ylabel('Test accuracy','FontSize',f_size);
+xlabel('Variance of the distribution');
+ylabel('Test accuracy');
 print(h2,'-dpng',fullfile(save_path, 'g-test.png'));
 % print(h, '..\\..\\t.epsc', '-depsc');
 
