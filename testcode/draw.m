@@ -1,3 +1,14 @@
+%% env
+close all;
+clc;
+warning off all;
+% add necessary paths
+addpath(genpath('./baselines'));
+addpath(genpath('./mmlp'));
+addpath(genpath('./framework'));
+addpath(genpath('./fFME'));
+
+
 %% draw gaussian
 d=1; std=0.07;
 save_path = 'result/test/semi';
@@ -51,12 +62,13 @@ load(emax_data);
 %%
 close all;
 t=14;
-gscatter(X_train(1,:)', X_train(2,:)', Y_train, 'rc', 'x.');
+gs=12;
+gscatter(X_train(1,:)', X_train(2,:)', Y_train, 'rc', 'x.', gs, gs, 'off');
 hold on;
 [r, c] = find(label{1}(:,t));
-plot(X_train(1,r(1))', X_train(2,r(1))', 'kx', 'MarkerSize', 10, 'LineWidth', 3);
+plot(X_train(1,r(1))', X_train(2,r(1))', 'kx', 'MarkerSize', 20, 'LineWidth', 3);
 hold on;
-plot(X_train(1,r(2))', X_train(2,r(2))', 'bo', 'MarkerSize', 6, 'LineWidth', 6);
+plot(X_train(1,r(2))', X_train(2,r(2))', 'bo', 'MarkerSize', 8, 'LineWidth', 8);
 axis off;
 print(gcf,'-dpng',fullfile(record_path, 'gt.png'));
 
@@ -69,7 +81,7 @@ F1 = F*diag(sum(F).^-1);
 [~, F] = max(F1,[],2);
         
 figure;
-gscatter(X_train(1,:)', X_train(2,:)', F, 'rc', 'x.');
+gscatter(X_train(1,:)', X_train(2,:)', F, 'rc', 'x.', gs, gs, 'off');
 axis off;
 print(gcf,'-dpng',fullfile(record_path, 'agr.png'));
 
@@ -79,7 +91,7 @@ best_beta = result_EAGR_para_best{1}.best_id(1)
     result_EAGR_para_best{1}.best_para(2));
 
 figure;
-gscatter(X_train(1,:)', X_train(2,:)', F, 'rc', 'x.');
+gscatter(X_train(1,:)', X_train(2,:)', F, 'rc', 'x.', gs, gs, 'off');
 axis off;
 print(gcf,'-dpng',fullfile(record_path, 'eagr.png'));
 
@@ -103,7 +115,7 @@ p.gamma = 1e-9;
 [~, F] = max(F_train,[],2);
 
 figure;
-gscatter(X_train(1,:)', X_train(2,:)', F, 'rc', 'x.');
+gscatter(X_train(1,:)', X_train(2,:)', F, 'rc', 'x.', gs, gs, 'off');
 axis off;
 print(gcf,'-dpng',fullfile(record_path, 'ffme.png'));
 
@@ -114,7 +126,7 @@ p.gamma = result_efFME_1e9_para_best{1}.best_train_para(2);
 [~, F] = max(F_train,[],2);
 
 figure;
-gscatter(X_train(1,:)', X_train(2,:)', F, 'rc', 'x.');
+gscatter(X_train(1,:)', X_train(2,:)', F, 'rc', 'x.', gs, gs, 'off');
 axis off;
 print(gcf,'-dpng',fullfile(record_path, 'effme.png'));
 
@@ -125,7 +137,7 @@ p.gamma = result_aFME_1e9_para_best{1}.best_train_para(2);
 [~, F] = max(F_train,[],2);
 
 figure;
-gscatter(X_train(1,:)', X_train(2,:)', F, 'rc', 'x.');
+gscatter(X_train(1,:)', X_train(2,:)', F, 'rc', 'x.', gs, gs, 'off');
 axis off;
 print(gcf,'-dpng',fullfile(record_path, 'afme.png'));
 
@@ -136,7 +148,7 @@ F = flann_NN(X_train(:,label_ind), Y_train(label_ind), ...
         X_train(:,unlabel_ind));
     
 figure;
-gscatter(X_train(1,unlabel_ind)', X_train(2,unlabel_ind)', F, 'rc', 'x.');
+gscatter(X_train(1,unlabel_ind)', X_train(2,unlabel_ind)', F, 'rc', 'x.', gs, gs, 'off');
 axis off;
 print(gcf,'-dpng',fullfile(record_path, 'nn.png'));
 
@@ -145,7 +157,7 @@ label_index = find(label{1}(:,t));
 [F, ~, ~, ~, ~] = mmlp(E_min, X_train, Y_train, label_index);
 
 figure;
-gscatter(X_train(1,:)', X_train(2,:)', F, 'rc', 'x.');
+gscatter(X_train(1,:)', X_train(2,:)', F, 'rc', 'x.', gs, gs, 'off');
 axis off;
 print(gcf,'-dpng',fullfile(record_path, 'mmlp.png'));
 
@@ -173,7 +185,7 @@ F = mtc_matlab(full(edges), n, Y, n_class, 0, 1);
 F = F + 1;
 
 figure;
-gscatter(X_train(1,:)', X_train(2,:)', F, 'rc', 'x.');
+gscatter(X_train(1,:)', X_train(2,:)', F, 'rc', 'x.', gs, gs, 'off');
 axis off;
 print(gcf,'-dpng',fullfile(record_path, 'mtc.png'));
 
@@ -201,6 +213,6 @@ F_train = X_train' * W + ones(size(X_train, 2), 1) * b';
 [~, F] = max(F_train, [], 2);
 
 figure;
-gscatter(X_train(1,:)', X_train(2,:)', F, 'rc', 'x.');
+gscatter(X_train(1,:)', X_train(2,:)', F, 'rc', 'x.', gs, gs, 'off');
 axis off;
 print(gcf,'-dpng',fullfile(record_path, 'laprls.png'));                
