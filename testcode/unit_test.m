@@ -1,5 +1,14 @@
 %% unit test
 
+%% test pca
+points = mvnrnd([5,5], [3,0;0,0.1], 1000);
+points = points';
+scatter(points(1,:)',points(2,:)');
+[U, M] = pca(points, 0)
+R = [cosd(45), -sind(45); sind(45), cosd(45)]
+points = R * points;
+
+
 %% test generate label
 gnd = [1;2;3;1;2;3;1;2;3;1;1;2;3;2;3];
 
