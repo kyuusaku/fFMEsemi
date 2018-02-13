@@ -21,7 +21,7 @@ end
 
 %% para
 data_name = get_data_name(p.Results.dataset);
-save_path = ['result/' p.Results.dataset '/semi'];
+save_path = ['result/' p.Results.dataset '/semi-a' num2str(p.Results.anchorNumber)];
 if ~exist(save_path, 'dir')
     mkdir(save_path);
 end
@@ -38,12 +38,13 @@ para.pca_preserve = 50;
 para.p = [o];% number of label per class
 para.s = 3; % anchor
 para.cn = 10;
-para.num_anchor = 1000;
+para.num_anchor = p.Results.anchorNumber;
 para.knn = 3;
 para.beta = [1e-3;1e-2;1e-1;1;1e1;1e2;1e3];
-para.num_anchors = get_num_anchors(p.Results.dataset);
+% para.num_anchors = get_num_anchors(p.Results.dataset);
 para.K = 10;
 save(fullfile(record_path, 'para.mat'), 'para');
+disp(para);
 
 %% load data
 pca_data = fullfile(save_path, 'pca.mat');
@@ -107,28 +108,6 @@ else
     load(eag_data);
 end
 
-%% compute anchor hierarchy
-% hag_data = fullfile(save_path, 'hag.mat');
-% if ~exist(hag_data, 'file')
-%     [anchors, anchors_time] = hanchors(X_train, para.num_anchors);
-%     [ZH, Z01, zh_time, rLh, rLh_time] = hag(X_train, anchors, 3);
-%     save(hag_data, 'ZH', 'Z01', 'rLh', 'zh_time', 'rLh_time', 'anchors', 'anchors_time');
-% else
-%     load(hag_data);
-% end
-
-%% run fast FME
-% best_mu = []; best_gamma = [];
-% ffme_data_1_1e9_para_best = fullfile(record_path, 'result_fastFME1_1e9_para_best.mat');
-% if ~exist(ffme_data_1_1e9_para_best, 'file')
-%     result_fastFME1_1e9_para_best = run_fastFME_semi_para(X_train, Y_train, X_test, Y_test, B, label, ...
-%         1e9, best_mu, best_gamma);
-%     save(ffme_data_1_1e9_para_best, 'result_fastFME1_1e9_para_best');
-% else
-%     load(ffme_data_1_1e9_para_best);
-% end
-% celldisp(result_fastFME1_1e9_para_best);
-
 %% run fast FME
 mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
 gamma = mu;
@@ -164,45 +143,6 @@ else
 end
 celldisp(result_EAGR_para_best);
 
-%% run HAGR
-% best_gamma = [];
-% hagr_data_para_best = fullfile(record_path, 'result_HAGR_para_best.mat');
-% if ~exist(hagr_data_para_best, 'file')
-%     result_HAGR_para_best = run_HAGR_para(Y_train, ZH, rLh, label, best_gamma);
-%     save(hagr_data_para_best, 'result_HAGR_para_best');
-% else
-%     load(hagr_data_para_best);
-% end
-% celldisp(result_HAGR_para_best);
-
-%% run eFME
-mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
-gamma = mu;
-best_beta = result_EAGR_para_best{1}.best_id(1)
-efme_data_1e9_para_best = fullfile(record_path, 'result_eFME_1e9_para_best.mat');
-if ~exist(efme_data_1e9_para_best, 'file')
-    result_eFME_1e9_para_best = run_eFME_semi_para(X_train, Y_train, X_test, Y_test, ...
-        Z{best_beta}, rLz{best_beta}, label, 1e9, mu, gamma);
-    save(efme_data_1e9_para_best, 'result_eFME_1e9_para_best');
-else
-    load(efme_data_1e9_para_best);
-end
-celldisp(result_eFME_1e9_para_best);
-
-%% run efFME
-mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
-gamma = mu;
-best_beta = result_EAGR_para_best{1}.best_id(1)
-effme_data_1e9_para_best = fullfile(record_path, 'result_efFME_1e9_para_best.mat');
-if ~exist(effme_data_1e9_para_best, 'file')
-    result_efFME_1e9_para_best = run_efFME_semi_para(X_train, Y_train, X_test, Y_test, ...
-        Z{best_beta}, label, 1e9, mu, gamma);
-    save(effme_data_1e9_para_best, 'result_efFME_1e9_para_best');
-else
-    load(effme_data_1e9_para_best);
-end
-celldisp(result_efFME_1e9_para_best);
-
 %% run aFME
 mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
 gamma = mu;
@@ -216,32 +156,6 @@ else
     load(afme_data_1e9_para_best);
 end
 celldisp(result_aFME_1e9_para_best);
-
-%% run heFME
-% mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
-% gamma = mu;
-% hefme_data_1e9_para_best = fullfile(record_path, 'result_heFME_1e9_para_best.mat');
-% if ~exist(hefme_data_1e9_para_best, 'file')
-%     result_heFME_1e9_para_best = run_heFME_semi_para(X_train, Y_train, X_test, Y_test, ...
-%         ZH, rLh, label, 1e9, mu, gamma);
-%     save(hefme_data_1e9_para_best, 'result_heFME_1e9_para_best');
-% else
-%     load(hefme_data_1e9_para_best);
-% end
-% celldisp(result_heFME_1e9_para_best);
-
-%% run hfFME
-% mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
-% gamma = mu;
-% hffme_data_1e9_para_best = fullfile(record_path, 'result_hfFME_1e9_para_best.mat');
-% if ~exist(hffme_data_1e9_para_best, 'file')
-%     result_hfFME_1e9_para_best = run_hfFME_semi_para(X_train, Y_train, X_test, Y_test, ZH, label, ...
-%         1e9, mu, gamma);
-%     save(hffme_data_1e9_para_best, 'result_hfFME_1e9_para_best');
-% else
-%     load(hffme_data_1e9_para_best);
-% end
-% celldisp(result_hfFME_1e9_para_best);
 
 %% E_min
 emin_data = fullfile(save_path, 'E_min.mat');
@@ -260,51 +174,6 @@ if ~exist(emax_data, 'file')
 else
     load(emax_data);
 end
-
-%% compute minmax anchor graph
-% mmag_data = fullfile(save_path, 'mmag.mat');
-% if ~exist(mmag_data, 'file')
-%     %[~, anchor, kmeans_time] = k_means(X_train, para.num_anchor);
-%     [aIdx, val, find_idx_time] = find_idx(anchor, X_train);
-%     [Zm, mmmp_weight_time, ~] = mmmp_weight(E_max, aIdx, para.knn);
-%     % Normalized graph Laplacian
-%     tic;W=Zm'*Zm;
-%     Dt=diag(sum(W).^(-1/2));
-%     S=Dt*W*Dt;
-%     rLm=eye(para.num_anchor,para.num_anchor)-S; rLm_time = toc;
-%     % Save
-%     save(mmag_data, 'Zm', 'rLm', 'find_idx_time', 'mmmp_weight_time', ...
-%         'rLm_time', 'kmeans_time', 'anchor');
-%     clear val W Dt S;
-% else
-%     load(mmag_data);
-% end
-
-%% run mmfFME
-% mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
-% gamma = mu;
-% mmffme_data_1e9_para_best = fullfile(record_path, 'result_mmfFME_1e9_para_best.mat');
-% if ~exist(mmffme_data_1e9_para_best, 'file')
-%     result_mmfFME_1e9_para_best = run_mmfFME_semi_para(X_train, Y_train, X_test, Y_test, ...
-%         Zm, label, 1e9, mu, gamma);
-%     save(mmffme_data_1e9_para_best, 'result_mmfFME_1e9_para_best');
-% else
-%     load(mmffme_data_1e9_para_best);
-% end
-% celldisp(result_mmfFME_1e9_para_best);
-
-%% run maFME
-% mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
-% gamma = mu;
-% mmafme_data_1e9_para_best = fullfile(record_path, 'result_mmaFME_1e9_para_best.mat');
-% if ~exist(mmafme_data_1e9_para_best, 'file')
-%     result_mmaFME_1e9_para_best = run_mmaFME_semi_para(X_train, Y_train, X_test, Y_test, anchor, ...
-%         Zm, rLm, label, 1e9, mu, gamma);
-%     save(mmafme_data_1e9_para_best, 'result_mmaFME_1e9_para_best');
-% else
-%     load(mmafme_data_1e9_para_best);
-% end
-% celldisp(result_mmaFME_1e9_para_best);
 
 %% run MMLP
 mmlp_data_para = fullfile(record_path, 'result_MMLP_min_para.mat');
@@ -340,6 +209,7 @@ if ~exist(mtc_data_para, 'file')
 else
     load(mtc_data_para);
 end
+celldisp(result_MTC_para)
 
 %% run NN
 nn_data_para = fullfile(record_path, 'result_NN_para.mat');
@@ -349,6 +219,7 @@ if ~exist(nn_data_para, 'file')
 else
     load(nn_data_para);
 end
+celldisp(result_NN_para)
 
 %% run LapRLS/L
 best_s = []; best_gammaA = []; best_gammaI = [];
@@ -360,11 +231,9 @@ if ~exist(laprls_data2_para_best, 'file')
 else
     load(laprls_data2_para_best);
 end
-
-
+celldisp(result_LapRLS2_para_best)
 
 %% ttest
-% Unlabel ttest 1=PVM, 2=AGR, 3=MMLP, 4=1NN, 5=LapRLS, 6=fastFME
 X_AGR = result_AGR_para_best{1}.accuracy(result_AGR_para_best{1}.best_id, :);
 X_EAGR = result_EAGR_para_best{1}.accuracy(...
     result_EAGR_para_best{1}.best_id(1), ...
@@ -382,16 +251,12 @@ X_fastFME_u = result_fastFME1_1e9_para_best{1}.accuracy(...
     result_fastFME1_1e9_para_best{1}.best_train_para_id(1), ...
     result_fastFME1_1e9_para_best{1}.best_train_para_id(2), :, 1);
 X_fastFME_u = squeeze(X_fastFME_u)';
-X_efFME_u = result_efFME_1e9_para_best{1}.accuracy(...
-    result_efFME_1e9_para_best{1}.best_train_para_id(1), ...
-    result_efFME_1e9_para_best{1}.best_train_para_id(2), :, 1);
-X_efFME_u = squeeze(X_efFME_u)';
 X_aFME_u = result_aFME_1e9_para_best{1}.accuracy(...
     result_aFME_1e9_para_best{1}.best_train_para_id(1), ...
     result_aFME_1e9_para_best{1}.best_train_para_id(2), :, 1);
 X_aFME_u = squeeze(X_aFME_u)';
 X_unlabel = {X_AGR; X_EAGR; X_MMLP; X_MTC; X_NN_u; X_LapRLS_u; X_fastFME_u; ...
-    X_efFME_u; X_aFME_u};
+    X_aFME_u};
 unlabel_ttest = zeros(numel(X_unlabel), numel(X_unlabel), 2);
 for i = 1 : numel(X_unlabel)
     for j = 1 : numel(X_unlabel)
@@ -410,15 +275,11 @@ X_fastFME_t = result_fastFME1_1e9_para_best{1}.accuracy(...
     result_fastFME1_1e9_para_best{1}.best_test_para_id(1), ...
     result_fastFME1_1e9_para_best{1}.best_test_para_id(2), :, 2);
 X_fastFME_t = squeeze(X_fastFME_t)';
-X_efFME_t = result_efFME_1e9_para_best{1}.accuracy(...
-    result_efFME_1e9_para_best{1}.best_test_para_id(1), ...
-    result_efFME_1e9_para_best{1}.best_test_para_id(2), :, 2);
-X_efFME_t = squeeze(X_efFME_t)';
 X_aFME_t = result_aFME_1e9_para_best{1}.accuracy(...
     result_aFME_1e9_para_best{1}.best_test_para_id(1), ...
     result_aFME_1e9_para_best{1}.best_test_para_id(2), :, 1);
 X_aFME_t = squeeze(X_aFME_t)';
-X_test = {X_NN_t; X_LapRLS_t; X_fastFME_t; X_efFME_t; X_aFME_t};
+X_test = {X_NN_t; X_LapRLS_t; X_fastFME_t; X_aFME_t};
 test_ttest = zeros(numel(X_test), numel(X_test), 2);
 for i = 1 : numel(X_test)
     for j = 1 : numel(X_test)
@@ -437,7 +298,6 @@ celldisp(result_MTC_para);
 celldisp(result_NN_para);
 celldisp(result_LapRLS2_para_best);
 celldisp(result_fastFME1_1e9_para_best);
-celldisp(result_efFME_1e9_para_best);
 celldisp(result_aFME_1e9_para_best);
 unlabel_ttest
 test_ttest

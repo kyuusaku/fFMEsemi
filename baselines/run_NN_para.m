@@ -7,7 +7,7 @@ np = numel(label);
 result_NN = cell(np, 1);
 for i = 1 : np
     [err, best_train, best_test, average_time] = ...
-        iner_run_LGC(X_train, Y_train, X_test, Y_test, label{i});
+        iner_run_NN(X_train, Y_train, X_test, Y_test, label{i});
     result.accuracy = 100*(1-err);
     result.best_train_accuracy = [100*(1-best_train(1,1)), 100*best_train(1,2)];
     result.best_test_accuracy = [100*(1-best_test(1,1)), 100*best_test(1,2)];
@@ -21,7 +21,7 @@ fprintf('done.\n');
 end
 
 function [err, best_train, best_test, average_time] = ...
-        iner_run_LGC(X_train, Y_train, X_test, Y_test, label)
+        iner_run_NN(X_train, Y_train, X_test, Y_test, label)
 iter = size(label, 2);
 err = zeros(iter, 2);
 time = zeros(iter, 1);

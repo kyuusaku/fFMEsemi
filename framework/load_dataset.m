@@ -101,6 +101,24 @@ if strcmp(dataset, 'covtype')
     clear U M;
 end
 
+if strcmp(dataset, 'usps')
+    % load original data
+    load(fullfile(data_path, strcat(para.dataset, '.mat')));
+    fea = fea';
+    % default split
+    nSmp = numel(gnd);
+    split = false(nSmp, 1);
+    split(1:7291) = true;
+    % preprocess
+    X_train = fea(:, split); Y_train = gnd(split);
+    X_test = fea(:, ~split); Y_test = gnd(~split);
+    clear fea gnd split;
+    [U, M] = pca(X_train, para.pca_preserve);
+    X_train = U'*bsxfun(@minus, X_train, M);
+    X_test = U'*bsxfun(@minus, X_test, M);
+    clear U M;
+end
+
 if strcmp(dataset, 'usps-large')
     % load original data
     data = load(fullfile(data_path, strcat(para.dataset, '.mat')));
