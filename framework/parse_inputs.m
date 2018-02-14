@@ -23,3 +23,6 @@ addParameter(p,'parforNumber',defaultParforNumber,@isnumeric);
 
 defaultAnchorNumber = 1000;
 addParameter(p,'anchorNumber',defaultAnchorNumber,@isnumeric);
+
+defaultRunFME = false;
+addParameter(p,'runFME',defaultRunFME,@islogical);

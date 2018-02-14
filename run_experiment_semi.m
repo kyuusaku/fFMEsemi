@@ -18,7 +18,8 @@ addpath(['./flann-' p.Results.system]);
 if p.Results.parfor
     parpool(p.Results.parforNumber);
 end
-
+%
+runFME = p.Results.runFME;
 %% para
 data_name = get_data_name(p.Results.dataset);
 save_path = ['result/' p.Results.dataset '/semi-a' num2str(p.Results.anchorNumber)];
@@ -233,6 +234,20 @@ else
 end
 celldisp(result_LapRLS2_para_best)
 
+%% run FME
+if runFME
+best_s = []; best_mu = []; best_gamma = [];
+fme_data_1_1_para_best = fullfile(record_path, 'result_FME1_1_para_best.mat');
+if ~exist(fme_data_1_1_para_best, 'file')
+    result_FME1_1_para_best = run_FME_semi_para(X_train, Y_train, X_test, Y_test, E_max, label, ...
+        1, best_mu, best_gamma, best_s);
+    save(fme_data_1_1_para_best, 'result_FME1_1_para_best');
+else
+    load(fme_data_1_1_para_best);
+end
+celldisp(result_FME1_1_para_best)
+end
+
 %% ttest
 X_AGR = result_AGR_para_best{1}.accuracy(result_AGR_para_best{1}.best_id, :);
 X_EAGR = result_EAGR_para_best{1}.accuracy(...
@@ -299,5 +314,8 @@ celldisp(result_NN_para);
 celldisp(result_LapRLS2_para_best);
 celldisp(result_fastFME1_1e9_para_best);
 celldisp(result_aFME_1e9_para_best);
+if runFME
+celldisp(result_FME1_1_para_best);
+end
 unlabel_ttest
 test_ttest
