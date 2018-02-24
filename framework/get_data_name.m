@@ -18,6 +18,9 @@ end
 if strcmp(dataset, 'covtype')
     data_name = 'covtype';
 end
+if strcmp(dataset, 'coil100')
+    data_name = 'COIL100';
+end
 if strcmp(dataset, 'usps')
     data_name = 'USPS';
 end
