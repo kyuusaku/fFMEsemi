@@ -1,6 +1,5 @@
 result/
 data/
-prepare/
 *.m~
 */*.m~
 .DS_Store

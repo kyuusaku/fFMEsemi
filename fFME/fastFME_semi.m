@@ -10,9 +10,9 @@ function [W, b, F] = fastFME_semi(X, B, Y, para)
 %       para.mu: the parameter
 %       para.gamma: the parameter
 % OUTPUT
-%     W: projection matrix
-%     b: bias vector
-%     F: soft label matrix
+%     W: f*c projection matrix
+%     b: c*1 bias vector
+%     F: n*c soft label matrix
 
 [dim,n] = size(X);
 

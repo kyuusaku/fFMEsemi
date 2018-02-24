@@ -44,7 +44,7 @@ errs = zeros(n_s, iter);
 time = zeros(n_s, iter);
 l_time = zeros(n_s, 1);
 for ps = 1 : n_s
-    s = s_para(ps)/k;
+    s = s_para(ps)/k; % s = e
 
     t_start = tic;
     [ii, jj, ss] = find(S);

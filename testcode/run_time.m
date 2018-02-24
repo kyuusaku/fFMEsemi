@@ -12,6 +12,8 @@ warning off all;
 addpath(genpath('./baselines'));
 addpath(genpath('./mmlp'));
 addpath('./flann-linux');
+addpath('./framework');
+addpath('./fFME');
 %addpath('./flann-win');
 % parpool(8);
 
@@ -538,7 +540,7 @@ for i = 1 : numel(num_samples)
             Y(label_ind(cc_ind),cc) = 1;
         end
         Y = sparse(Y);
-        [~, ~, F_train] = aFME_semi(anchor, Z_tmp, rLz_tmp, Y, p);
+        [W, b, F_train] = aFME_semi(anchor, Z_tmp, rLz_tmp, Y, p);
         aFME_time(i, t) = toc;
         fprintf('aFME: num=%d, t=%d, time=%f\n', ...
             num_samples(i), t, aFME_time(i, t));

@@ -1,0 +1,4 @@
+export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+export CPATH=/usr/local/cuda/include:$CPATH
+export LIBRARY_PATH=/usr/local/cuda/lib64:$LIBRARY_PATH
+export THEANO_FLAGS=floatX=float32,device=cuda7,force_device=True,nvcc.fastmath=True,nvcc.flags=-arch=sm_30,cuda.root=/usr/local/cuda/
