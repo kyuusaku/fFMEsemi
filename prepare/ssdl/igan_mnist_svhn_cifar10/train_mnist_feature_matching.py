@@ -23,11 +23,12 @@ parser.add_argument('--save_path', type=str, default='output/mnist_feature_match
 args = parser.parse_args()
 print(args)
 
-save_path = args.save_path + '/' \
-          + 'seed' + num2str(args.seed) \
-          + '_seeddata' + num2str(args.seed_data) \
-          + '_count' + num2str(args.count)
-if not os.path.exists(save_path):
+save_path = os.getcwd() + '/' + args.save_path + '/' \
+          + 'seed' + str(args.seed) \
+          + '_seeddata' + str(args.seed_data) \
+          + '_count' + str(args.count)
+if not os.path.isdir(save_path):
+    print('make dir')
     os.mkdir(save_path)
 
 # fixed random seeds
@@ -181,16 +182,16 @@ for epoch in range(300):
 save_model(save_path + '/final', layers)
 
 # generate and save features
-output_before_classifier = LL.get_output(layers[-3], x_unl, deterministic=True)
-generate_feature = th.function(inputs=[x_unl], outputs=output_before_classifier, 
-                               givens=disc_avg_givens)
-fea_trainx = np.zeros(trainx_permutation.shape[0], 250)
-fea_testx = np.zeros(testx.shape[0])
-for t in range(trainx_permutation.shape[0]):
-    fea_trainx[t] = generate_feature(trainx_permutation[t])
+x = T.matrix()
+output_before_classifier = LL.get_output(layers[-3], x, deterministic=True)
+generate_feature = th.function(inputs=[x], outputs=output_before_classifier)
+fea_trainx = np.zeros((trainx_permutation.shape[0], 250))
+fea_testx = np.zeros((testx.shape[0], 250))
+for t in range(nr_batches_train):
+    fea_trainx[t*args.batch_size:(t+1)*args.batch_size] = generate_feature(trainx_permutation[t*args.batch_size:(t+1)*args.batch_size])
     print("Generate features for train set: %d", t)
-for t in range(testx.shape[0]):
-    fea_testx[t] = generate_feature(testx[t])
+for t in range(nr_batches_test):
+    fea_testx[t*args.batch_size:(t+1)*args.batch_size] = generate_feature(testx[t*args.batch_size:(t+1)*args.batch_size])
     print("Generate features for test set: %d", t)
 scipy.io.savemat(save_path + '/fea.mat', 
                  mdict={'trainx': fea_trainx, 'trainy': trainy_permutation,
