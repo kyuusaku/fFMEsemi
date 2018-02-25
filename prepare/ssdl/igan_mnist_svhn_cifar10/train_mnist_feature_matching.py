@@ -1,3 +1,6 @@
+import os
+import scipy.io
+from utils import save_model
 import sys
 import argparse
 import numpy as np
@@ -16,8 +19,16 @@ parser.add_argument('--seed_data', type=int, default=1)
 parser.add_argument('--unlabeled_weight', type=float, default=1.)
 parser.add_argument('--batch_size', type=int, default=100)
 parser.add_argument('--count', type=int, default=10)
+parser.add_argument('--save_path', type=str, default='output/mnist_feature_matching')
 args = parser.parse_args()
 print(args)
+
+save_path = args.save_path + '/' \
+          + 'seed' + num2str(args.seed) \
+          + '_seeddata' + num2str(args.seed_data) \
+          + '_count' + num2str(args.count)
+if not os.path.exists(save_path):
+    os.mkdir(save_path)
 
 # fixed random seeds
 rng = np.random.RandomState(args.seed)
@@ -116,6 +127,12 @@ for j in range(10):
 txs = np.concatenate(txs, axis=0)
 tys = np.concatenate(tys, axis=0)
 
+trainx_permutation = trainx.copy()
+trainy_permutation = trainy.copy()
+scipy.io.savemat(save_path + '/data.mat', 
+                 mdict={'trainx': trainx_permutation, 'trainy': trainy_permutation,
+                        'testx': testx, 'testy': testy})
+
 init_param(trainx[:500]) # data dependent initialization
 
 # //////////// perform training //////////////
@@ -159,3 +176,22 @@ for epoch in range(300):
     # report
     print("Iteration %d, time = %ds, loss_lab = %.4f, loss_unl = %.4f, train err = %.4f, test err = %.4f" % (epoch, time.time()-begin, loss_lab, loss_unl, train_err, test_err))
     sys.stdout.flush()
+
+# save trained model
+save_model(save_path + '/final', layers)
+
+# generate and save features
+output_before_classifier = LL.get_output(layers[-3], x_unl, deterministic=True)
+generate_feature = th.function(inputs=[x_unl], outputs=output_before_classifier, 
+                               givens=disc_avg_givens)
+fea_trainx = np.zeros(trainx_permutation.shape[0], 250)
+fea_testx = np.zeros(testx.shape[0])
+for t in range(trainx_permutation.shape[0]):
+    fea_trainx[t] = generate_feature(trainx_permutation[t])
+    print("Generate features for train set: %d", t)
+for t in range(testx.shape[0]):
+    fea_testx[t] = generate_feature(testx[t])
+    print("Generate features for test set: %d", t)
+scipy.io.savemat(save_path + '/fea.mat', 
+                 mdict={'trainx': fea_trainx, 'trainy': trainy_permutation,
+                        'testx': fea_testx, 'testy': testy})
