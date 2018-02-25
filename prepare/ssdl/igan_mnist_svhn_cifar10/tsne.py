@@ -1,5 +1,6 @@
 import scipy.io as sio
 from sklearn.manifold import TSNE
+import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--data_path', type=str)
