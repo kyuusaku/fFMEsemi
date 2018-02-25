@@ -17,6 +17,6 @@ testy = data['testy']
 trainx_embedded = TSNE(n_components=2).fit_transform(trainx)
 testx_embedded = TSNE(n_components=2).fit_transform(testx)
 
-scipy.io.savemat(save_path + '/fea_tsne.mat', 
-                 mdict={'trainx': trainx_embedded, 'trainy': trainy,
-                        'testx': testx_embedded, 'testy': testy})
+sio.savemat(args.data_path + '/fea_tsne.mat', 
+            mdict={'trainx': trainx_embedded, 'trainy': trainy,
+                   'testx': testx_embedded, 'testy': testy})
