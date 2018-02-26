@@ -64,13 +64,13 @@ layers.append(nn.DenseLayer(layers[-1], num_units=10, nonlinearity=None, train_s
 x_unl = T.matrix()
 
 temp = LL.get_output(gen_layers[-1], init=True)
+temp = LL.get_output(layers[-1], x_unl, deterministic=False, init=True)
 init_updates = [u for l in gen_layers+layers for u in getattr(l,'init_updates',[])]
 
 output_before_softmax_unl = LL.get_output(layers[-1], x_unl, deterministic=False)
 output_before_softmax_fake = LL.get_output(layers[-1], gen_dat, deterministic=False)
 
 l_unl = nn.log_sum_exp(output_before_softmax_unl)
-loss_lab = -T.mean(l_lab) + T.mean(z_exp_lab)
 loss_unl = -0.5*T.mean(l_unl) + 0.5*T.mean(T.nnet.softplus(nn.log_sum_exp(output_before_softmax_unl))) + 0.5*T.mean(T.nnet.softplus(nn.log_sum_exp(output_before_softmax_fake)))
 
 mom_gen = T.mean(LL.get_output(layers[-3], gen_dat), axis=0)
@@ -80,15 +80,15 @@ loss_gen = T.mean(T.square(mom_gen - mom_real))
 # Theano functions for training and testing
 lr = T.scalar()
 disc_params = LL.get_all_params(layers, trainable=True)
-disc_param_updates = nn.adam_updates(disc_params, loss_lab + args.unlabeled_weight*loss_unl, lr=lr, mom1=0.5)
+disc_param_updates = nn.adam_updates(disc_params, args.unlabeled_weight*loss_unl, lr=lr, mom1=0.5)
 disc_param_avg = [th.shared(np.cast[th.config.floatX](0.*p.get_value())) for p in disc_params]
 disc_avg_updates = [(a,a+0.0001*(p-a)) for p,a in zip(disc_params,disc_param_avg)]
 disc_avg_givens = [(p,a) for p,a in zip(disc_params,disc_param_avg)]
 gen_params = LL.get_all_params(gen_layers[-1], trainable=True)
 gen_param_updates = nn.adam_updates(gen_params, loss_gen, lr=lr, mom1=0.5)
 init_param = th.function(inputs=[x_unl], outputs=None, updates=init_updates)
-train_batch_disc = th.function(inputs=[x_unl,lr], outputs=[loss_unl], updates=disc_param_updates+disc_avg_updates)
-train_batch_gen = th.function(inputs=[x_unl,lr], outputs=[loss_gen], updates=gen_param_updates)
+train_batch_disc = th.function(inputs=[x_unl,lr], outputs=loss_unl, updates=disc_param_updates+disc_avg_updates)
+train_batch_gen = th.function(inputs=[x_unl,lr], outputs=loss_gen, updates=gen_param_updates)
 
 # load MNIST data
 data = np.load('mnist.npz')
@@ -114,15 +114,6 @@ lr = 0.003
 for epoch in range(300):
     begin = time.time()
 
-    # construct randomly permuted minibatches
-    trainx = []
-    trainy = []
-    for t in range(trainx_unl.shape[0]/txs.shape[0]):
-        inds = rng.permutation(txs.shape[0])
-        trainx.append(txs[inds])
-        trainy.append(tys[inds])
-    trainx = np.concatenate(trainx, axis=0)
-    trainy = np.concatenate(trainy, axis=0)
     trainx_unl = trainx_unl[rng.permutation(trainx_unl.shape[0])]
     trainx_unl2 = trainx_unl2[rng.permutation(trainx_unl2.shape[0])]
 
