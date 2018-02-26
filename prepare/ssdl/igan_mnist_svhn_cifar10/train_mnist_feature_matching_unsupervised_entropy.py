@@ -90,7 +90,7 @@ disc_avg_updates = [(a,a+0.0001*(p-a)) for p,a in zip(disc_params,disc_param_avg
 disc_avg_givens = [(p,a) for p,a in zip(disc_params,disc_param_avg)]
 gen_params = LL.get_all_params(gen_layers[-1], trainable=True)
 gen_param_updates = nn.adam_updates(gen_params, loss_gen, lr=lr, mom1=0.5)
-init_param = th.function(inputs=[x_unl], outputs=None, updates=init_updates)
+init_param = th.function(inputs=[x_lab], outputs=None, updates=init_updates)
 train_batch_disc = th.function(inputs=[x_lab, x_unl,lr], outputs=[loss_entropy, loss_unl], updates=disc_param_updates+disc_avg_updates)
 train_batch_gen = th.function(inputs=[x_unl,lr], outputs=loss_gen, updates=gen_param_updates)
 
