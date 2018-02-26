@@ -61,16 +61,18 @@ layers.append(nn.GaussianNoiseLayer(layers[-1], sigma=0.5))
 layers.append(nn.DenseLayer(layers[-1], num_units=10, nonlinearity=None, train_scale=True))
 
 # costs
+x_lab = T.matrix()
 x_unl = T.matrix()
 
 temp = LL.get_output(gen_layers[-1], init=True)
-temp = LL.get_output(layers[-1], x_unl, deterministic=False, init=True)
+temp = LL.get_output(layers[-1], x_lab, deterministic=False, init=True)
 init_updates = [u for l in gen_layers+layers for u in getattr(l,'init_updates',[])]
 
+output_before_softmax_lab = LL.get_output(layers[-1], x_lab, deterministic=False)
 output_before_softmax_unl = LL.get_output(layers[-1], x_unl, deterministic=False)
 output_before_softmax_fake = LL.get_output(layers[-1], gen_dat, deterministic=False)
 
-log_fx = output_before_softmax_unl - nn.log_sum_exp(output_before_softmax_unl).dimshuffle(0,'x')
+log_fx = output_before_softmax_lab - nn.log_sum_exp(output_before_softmax_lab).dimshuffle(0,'x')
 loss_entropy = -T.mean(T.sum(T.exp(log_fx) * log_fx, axis=1))
 l_unl = nn.log_sum_exp(output_before_softmax_unl)
 loss_unl = -0.5*T.mean(l_unl) + 0.5*T.mean(T.nnet.softplus(nn.log_sum_exp(output_before_softmax_unl))) + 0.5*T.mean(T.nnet.softplus(nn.log_sum_exp(output_before_softmax_fake)))
@@ -89,7 +91,7 @@ disc_avg_givens = [(p,a) for p,a in zip(disc_params,disc_param_avg)]
 gen_params = LL.get_all_params(gen_layers[-1], trainable=True)
 gen_param_updates = nn.adam_updates(gen_params, loss_gen, lr=lr, mom1=0.5)
 init_param = th.function(inputs=[x_unl], outputs=None, updates=init_updates)
-train_batch_disc = th.function(inputs=[x_unl,lr], outputs=[loss_entropy, loss_unl], updates=disc_param_updates+disc_avg_updates)
+train_batch_disc = th.function(inputs=[x_lab, x_unl,lr], outputs=[loss_entropy, loss_unl], updates=disc_param_updates+disc_avg_updates)
 train_batch_gen = th.function(inputs=[x_unl,lr], outputs=loss_gen, updates=gen_param_updates)
 
 # load MNIST data
@@ -124,7 +126,7 @@ for epoch in range(300):
     loss_unl = 0.
     loss_gen = 0.
     for t in range(nr_batches_train):
-        le, lu = train_batch_disc(trainx_unl[t*args.batch_size:(t+1)*args.batch_size],lr)
+        le, lu = train_batch_disc(trainx_unl[t*args.batch_size:(t+1)*args.batch_size], trainx_unl[t*args.batch_size:(t+1)*args.batch_size],lr)
         loss_entropy += le
         loss_unl += lu
         e = train_batch_gen(trainx_unl2[t*args.batch_size:(t+1)*args.batch_size],lr)
