@@ -118,6 +118,7 @@ lr = 0.003
 for epoch in range(300):
     begin = time.time()
 
+    trainx = trainx[rng.permutation(trainx.shape[0])]
     trainx_unl = trainx_unl[rng.permutation(trainx_unl.shape[0])]
     trainx_unl2 = trainx_unl2[rng.permutation(trainx_unl2.shape[0])]
 
@@ -126,7 +127,7 @@ for epoch in range(300):
     loss_unl = 0.
     loss_gen = 0.
     for t in range(nr_batches_train):
-        le, lu = train_batch_disc(trainx_unl[t*args.batch_size:(t+1)*args.batch_size], trainx_unl[t*args.batch_size:(t+1)*args.batch_size],lr)
+        le, lu = train_batch_disc(trainx[t*args.batch_size:(t+1)*args.batch_size], trainx_unl[t*args.batch_size:(t+1)*args.batch_size],lr)
         loss_entropy += le
         loss_unl += lu
         e = train_batch_gen(trainx_unl2[t*args.batch_size:(t+1)*args.batch_size],lr)
