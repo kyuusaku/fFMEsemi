@@ -26,6 +26,14 @@ parser.add_argument('--save_path', type=str, default='output/cifar_feature_match
 args = parser.parse_args()
 print(args)
 
+save_path = os.getcwd() + '/' + args.save_path + '/' \
+          + 'seed' + str(args.seed) \
+          + '_seeddata' + str(args.seed_data) \
+          + '_count' + str(args.count)
+if not os.path.isdir(save_path):
+    print('make dir')
+    os.mkdir(save_path)
+
 # fixed random seeds
 rng_data = np.random.RandomState(args.seed_data)
 rng = np.random.RandomState(args.seed)
@@ -127,6 +135,12 @@ for j in range(10):
 txs = np.concatenate(txs, axis=0)
 tys = np.concatenate(tys, axis=0)
 
+trainx_permutation = trainx.copy()
+trainy_permutation = trainy.copy()
+scipy.io.savemat(save_path + '/data.mat', 
+                 mdict={'trainx': trainx_permutation, 'trainy': trainy_permutation,
+                        'testx': testx, 'testy': testy})
+
 # //////////// perform training //////////////
 for epoch in range(1200):
     begin = time.time()
@@ -187,3 +201,24 @@ for epoch in range(1200):
     # save params
     #np.savez('disc_params.npz', *[p.get_value() for p in disc_params])
     #np.savez('gen_params.npz', *[p.get_value() for p in gen_params])
+
+
+# save trained model
+save_model(save_path + '/final', layers)
+
+# generate and save features
+x = T.matrix()
+output_before_classifier = LL.get_output(layers[-3], x, deterministic=True)
+generate_feature = th.function(inputs=[x], outputs=output_before_classifier)
+fea_trainx = np.zeros((trainx_permutation.shape[0], 250))
+fea_testx = np.zeros((testx.shape[0], 250))
+for t in range(nr_batches_train):
+    fea_trainx[t*args.batch_size:(t+1)*args.batch_size] = generate_feature(trainx_permutation[t*args.batch_size:(t+1)*args.batch_size])
+    print("Generate features for train set: %d", t)
+for t in range(nr_batches_test):
+    fea_testx[t*args.batch_size:(t+1)*args.batch_size] = generate_feature(testx[t*args.batch_size:(t+1)*args.batch_size])
+    print("Generate features for test set: %d", t)
+scipy.io.savemat(save_path + '/fea.mat', 
+                 mdict={'trainx': fea_trainx, 'trainy': trainy_permutation,
+                        'testx': fea_testx, 'testy': testy})
+
