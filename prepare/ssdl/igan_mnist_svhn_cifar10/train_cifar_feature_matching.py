@@ -128,9 +128,9 @@ train_batch_gen = th.function(inputs=[x_unl,lr], outputs=None, updates=gen_param
 
 
 # generate 
-x = T.matrix()
-output_before_classifier = ll.get_output(disc_layers[-2], x, deterministic=True)
-generate_feature = th.function(inputs=[x], outputs=output_before_classifier)
+#x = T.matrix()
+#output_before_classifier = ll.get_output(disc_layers[-2], x, deterministic=True)
+generate_feature = th.function(inputs=[x_unl], outputs=output_unl)
 
 # select labeled data
 inds = rng_data.permutation(trainx.shape[0])
