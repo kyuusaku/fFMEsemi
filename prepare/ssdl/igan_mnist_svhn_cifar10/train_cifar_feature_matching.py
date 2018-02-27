@@ -126,6 +126,12 @@ gen_params = ll.get_all_params(gen_layers, trainable=True)
 gen_param_updates = nn.adam_updates(gen_params, loss_gen, lr=lr, mom1=0.5)
 train_batch_gen = th.function(inputs=[x_unl,lr], outputs=None, updates=gen_param_updates)
 
+
+# generate 
+x = T.matrix()
+output_before_classifier = ll.get_output(disc_layers[-2], x, deterministic=True)
+generate_feature = th.function(inputs=[x], outputs=output_before_classifier)
+
 # select labeled data
 inds = rng_data.permutation(trainx.shape[0])
 trainx = trainx[inds]
@@ -209,11 +215,7 @@ for epoch in range(2):
 
 # save trained model
 save_model(save_path + '/final', disc_layers)
-
-# generate and save features
-x = T.matrix()
-output_before_classifier = ll.get_output(disc_layers[-2], x, deterministic=True)
-generate_feature = th.function(inputs=[x], outputs=output_before_classifier)
+# save features
 fea_trainx = np.zeros((trainx_permutation.shape[0], 192))
 fea_testx = np.zeros((testx.shape[0], 192))
 for t in range(nr_batches_train):
