@@ -145,7 +145,8 @@ scipy.io.savemat(save_path + '/data.mat',
                         'testx': testx, 'testy': testy})
 
 # //////////// perform training //////////////
-for epoch in range(1200):
+for epoch in range(2):
+#for epoch in range(1200):
     begin = time.time()
     lr = np.cast[th.config.floatX](args.learning_rate * np.minimum(3. - epoch/400., 1.))
 
@@ -207,11 +208,11 @@ for epoch in range(1200):
 
 
 # save trained model
-save_model(save_path + '/final', layers)
+save_model(save_path + '/final', disc_layers)
 
 # generate and save features
 x = T.matrix()
-output_before_classifier = LL.get_output(layers[-3], x, deterministic=True)
+output_before_classifier = ll.get_output(disc_layers[-2], x, deterministic=True)
 generate_feature = th.function(inputs=[x], outputs=output_before_classifier)
 fea_trainx = np.zeros((trainx_permutation.shape[0], 192))
 fea_testx = np.zeros((testx.shape[0], 192))
