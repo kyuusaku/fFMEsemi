@@ -205,7 +205,7 @@ for epoch in range(1200):
     img_bhwc = np.transpose(sample_x[:100,], (0, 2, 3, 1))
     img_tile = plotting.img_tile(img_bhwc, aspect_ratio=1.0, border_color=1.0, stretch=True)
     img = plotting.plot_img(img_tile, title='CIFAR10 samples')
-    plotting.plt.savefig("cifar_sample_feature_match.png")
+    plotting.plt.savefig(save_path+"/cifar_sample_feature_match.png")
     plotting.plt.close()
 
     # save params
