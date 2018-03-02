@@ -101,7 +101,7 @@ loss_unl = -0.5*T.mean(l_unl) + 0.5*T.mean(T.nnet.softplus(l_unl)) + 0.5*T.mean(
 # Theano functions for training the disc net
 lr = T.scalar()
 disc_params = ll.get_all_params(disc_layers, trainable=True)
-disc_param_updates = nn.adam_updates(disc_params, loss_lab + args.unlabeled_weight*loss_unl, lr=lr, mom1=0.5)
+disc_param_updates = nn.adam_updates(disc_params, loss_entropy + args.unlabeled_weight*loss_unl, lr=lr, mom1=0.5)
 disc_param_avg = [th.shared(np.cast[th.config.floatX](0.*p.get_value())) for p in disc_params]
 disc_avg_updates = [(a,a+0.0001*(p-a)) for p,a in zip(disc_params,disc_param_avg)]
 disc_avg_givens = [(p,a) for p,a in zip(disc_params,disc_param_avg)]
