@@ -151,8 +151,7 @@ scipy.io.savemat(save_path + '/data.mat',
                         'testx': testx, 'testy': testy})
 
 # //////////// perform training //////////////
-for epoch in range(2):
-#for epoch in range(1200):
+for epoch in range(1200):
     begin = time.time()
     lr = np.cast[th.config.floatX](args.learning_rate * np.minimum(3. - epoch/400., 1.))
 
@@ -207,6 +206,7 @@ for epoch in range(2):
     img_tile = plotting.img_tile(img_bhwc, aspect_ratio=1.0, border_color=1.0, stretch=True)
     img = plotting.plot_img(img_tile, title='CIFAR10 samples')
     plotting.plt.savefig("cifar_sample_feature_match.png")
+    plotting.plt.close()
 
     # save params
     #np.savez('disc_params.npz', *[p.get_value() for p in disc_params])

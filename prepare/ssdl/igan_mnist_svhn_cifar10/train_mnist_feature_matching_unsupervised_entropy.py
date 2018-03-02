@@ -73,7 +73,7 @@ output_before_softmax_unl = LL.get_output(layers[-1], x_unl, deterministic=False
 output_before_softmax_fake = LL.get_output(layers[-1], gen_dat, deterministic=False)
 
 log_fx = output_before_softmax_lab - nn.log_sum_exp(output_before_softmax_lab).dimshuffle(0,'x')
-loss_entropy = -T.mean(T.sum(T.exp(log_fx) * log_fx, axis=1))
+loss_entropy = -0.1*T.mean(T.sum(T.exp(log_fx) * log_fx, axis=1))
 l_unl = nn.log_sum_exp(output_before_softmax_unl)
 loss_unl = -0.5*T.mean(l_unl) + 0.5*T.mean(T.nnet.softplus(nn.log_sum_exp(output_before_softmax_unl))) + 0.5*T.mean(T.nnet.softplus(nn.log_sum_exp(output_before_softmax_fake)))
 
