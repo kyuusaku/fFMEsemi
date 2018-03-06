@@ -111,8 +111,6 @@ for i = 1 : numel(num_samples)
     rLz=eye(para.num_anchor,para.num_anchor)-S; 
     eag_time = toc;
     
-    save(eag_data, 'Z', 'rLz', 'eag_time', 'kmeans_time', 'anchor');
-    
     eags{i,1} = Z;
     eags{i,2} = rLz;
     eags{i,3} = eag_time;
