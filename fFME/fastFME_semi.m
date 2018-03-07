@@ -24,7 +24,11 @@ u(sum(Y,2) == 1) = para.ul;
 U = spdiags(u,0,n,n);
 
 V_inv = spdiags((u + (para.mu + 1) .* ones(n,1)).^-1, 0, n, n);
-G = [B ones(n,1) Xc'];
+if dim > 50
+    G = [full(B) ones(n,1) Xc'];
+else
+    G = [B ones(n,1) Xc'];
+end
 Sigma = diag(sum(B));
 M_inv = blkdiag(Sigma, n/para.mu, A ./ para.mu);
 VUY = V_inv * U * Y;

@@ -4,10 +4,6 @@
 close all;
 clear;
 clc;
-%addpath(genpath('./dep'));
-%addpath(genpath('./baselines'));
-%addpath('./lib/flann');
-%run('./lib/vlfeat-0.9.20/toolbox/vl_setup.m');
 warning off all;
 addpath(genpath('./baselines'));
 addpath(genpath('./mmlp'));
@@ -18,7 +14,7 @@ addpath('./fFME');
 % parpool(8);
 
 %%
-dataset = 'number';
+dataset = 'feature';
 save_path = 'result/run_time';
 if ~exist(save_path, 'dir')
     mkdir(save_path);
@@ -31,7 +27,6 @@ end
 %%
 para.iter = 20;
 para.type = 'equal';
-para.pca_preserve = 50;
 para.p = [10];% label number of each class
 para.s = 3; % anchor
 para.cn = 10;
@@ -40,40 +35,29 @@ para.beta = 1;
 para.knn = 3;
 
 %%
-[fea, gnd] = make_classification(60000, 50, 10);
-X_train = fea';
-Y_train = gnd;
-
-%%
-num_samples = [3750, 7500, 15000, 30000, 60000];
-samples = cell(numel(num_samples), 2);
-labels = cell(numel(num_samples), 1);
-for i = 1 : numel(num_samples)
-    sample_ind = randsample(1:60000, num_samples(i));
+num_samples = 10000;
+num_features = [512, 1024, 2048, 4096, 8192];
+samples = cell(numel(num_features), 2);
+labels = cell(numel(num_features), 1);
+for i = 1 : numel(num_features)
+    [fea, gnd] = make_classification(num_samples, num_features(i), 10);
     
-    X_tmp = X_train(:, sample_ind);
-    Y_tmp = Y_train(sample_ind);
+    samples{i,1} = fea';
+    samples{i,2} = gnd;
     
-    [U, M] = pca(X_tmp, 50);
-    X_tmp = U'*bsxfun(@minus, X_tmp, M);
-    clear U M;
-    
-    samples{i,1} = X_tmp;
-    samples{i,2} = Y_tmp;
-    
-    l_tmp = generate_label(Y_tmp, para);
+    l_tmp = generate_label(gnd, para);
     labels{i} = l_tmp;
 end
 
 %%
-save(fullfile(record_path, 'samples.mat'), 'samples', 'labels', 'num_samples');
+save(fullfile(record_path, 'samples.mat'), 'samples', 'labels', 'num_features');
 
 %%
 load(fullfile(record_path, 'samples.mat'));
 
 %%
-ags = cell(numel(num_samples), 5);
-for i = 1 : numel(num_samples)
+ags = cell(numel(num_features), 5);
+for i = 1 : numel(num_features)
     X_tmp = samples{i,1};
   
     [~, anchor, kmeans_time] = k_means(X_tmp, para.num_anchor);
@@ -85,8 +69,8 @@ for i = 1 : numel(num_samples)
     ags{i,4} = kmeans_time;
     ags{i,5} = anchor;
     
-    fprintf('AG: num=%d, kmeans_time=%f, ag_time=%f\n', ...
-            num_samples(i), kmeans_time, ag_time);
+    fprintf('AG: num_feature=%d, kmeans_time=%f, ag_time=%f\n', ...
+            num_features(i), kmeans_time, ag_time);
 end
 
 %%
@@ -96,8 +80,8 @@ save(fullfile(record_path, 'ags.mat'), 'ags');
 load(fullfile(record_path, 'ags.mat'));
 
 %%
-eags = cell(numel(num_samples), 5);
-for i = 1 : numel(num_samples)
+eags = cell(numel(num_features), 5);
+for i = 1 : numel(num_features)
     X_tmp = samples{i,1};
     
     anchor = ags{i,5};
@@ -117,8 +101,8 @@ for i = 1 : numel(num_samples)
     eags{i,4} = kmeans_time;
     eags{i,5} = anchor;
     
-    fprintf('EAG: num=%d, kmeans_time=%f, eag_time=%f\n', ...
-            num_samples(i), kmeans_time, eag_time);
+    fprintf('EAG: num_feature=%d, kmeans_time=%f, eag_time=%f\n', ...
+            num_features(i), kmeans_time, eag_time);
 end
 
 %%
@@ -128,8 +112,8 @@ save(fullfile(record_path, 'eags.mat'), 'eags');
 load(fullfile(record_path, 'eags.mat'));
 
 %%
-lgs = cell(numel(num_samples), 12);
-for i = 1 : numel(num_samples)
+lgs = cell(numel(num_features), 12);
+for i = 1 : numel(num_features)
     X_tmp = samples{i,1};
     n = size(X_tmp, 2);
     
@@ -183,8 +167,8 @@ for i = 1 : numel(num_samples)
     lgs{i,11} = edges;
     lgs{i,12} = mtc_gr_time;
     
-    fprintf('LG: num=%d, s_time=%f, w_time=%f, l_time=%f, nl_time=%f, mmlp_gr_time=%f, mtc_gr_time=%f\n', ...
-            num_samples(i), s_time, w_time, l_time, nl_time, mmlp_gr_time, mtc_gr_time);
+    fprintf('LG: num_feature=%d, s_time=%f, w_time=%f, l_time=%f, nl_time=%f, mmlp_gr_time=%f, mtc_gr_time=%f\n', ...
+            num_features(i), s_time, w_time, l_time, nl_time, mmlp_gr_time, mtc_gr_time);
 end
 
 %%
@@ -194,141 +178,12 @@ save(fullfile(record_path, 'lgs.mat'), 'lgs');
 load(fullfile(record_path, 'lgs.mat'));
 
 %%
-class = unique(samples{5,2});
+class = unique(samples{1,2});
 n_class = numel(class);
-    
-%%
-FME_time = zeros(numel(num_samples), 20);
-p.ul = 1e9;
-p.uu = 0;
-p.mu = 1e-9;
-p.gamma = 1e-9;
-for i = 1 : numel(num_samples)
-    X_tmp = samples{i,1};
-    Y_tmp = samples{i,2};
-    L_tmp = lgs{i,5};
-    l_tmp = labels{i}{1};
-    for t = 1 : 20
-        tic;
-        label_ind = find(l_tmp(:,t));
-        Y = zeros(num_samples(i), n_class);
-        for cc = 1 : n_class
-            cc_ind = find(Y_tmp(label_ind) == class(cc));
-            Y(label_ind(cc_ind),cc) = 1;
-        end
-        Y = sparse(Y);
-        [W, b, F_train] = FME_semi_v2(X_tmp, L_tmp, Y, p);
-        FME_time(i, t) = toc;
-        fprintf('FME: num=%d, t=%d, time=%f\n', ...
-            num_samples(i), t, FME_time(i, t));
-    end
-end
 
 %%
-save(fullfile(record_path, 'fme.mat'), 'FME_time');
-
-%%
-load(fullfile(record_path, 'fme.mat'));
-
-%%
-FME_time_ver = zeros(numel(num_samples), 20);
-p.ul = 1e9;
-p.uu = 0;
-p.mu = 1e-9;
-p.lamda = 1e-9;
-for i = 1 : numel(num_samples)
-    X_tmp = samples{i,1};
-    Y_tmp = samples{i,2};
-    L_tmp = lgs{i,5};
-    l_tmp = labels{i}{1};
-    for t = 1 : 20
-        tic;
-        label_ind = find(l_tmp(:,t));
-        Y = zeros(num_samples(i), n_class);
-        for cc = 1 : n_class
-            cc_ind = find(Y_tmp(label_ind) == class(cc));
-            Y(label_ind(cc_ind),cc) = 1;
-        end
-        Y = sparse(Y);
-        [W, b, F_train] = FME_semi(X_tmp, L_tmp, Y, p);
-        FME_time_ver(i, t) = toc;
-        fprintf('FME: num=%d, t=%d, time=%f\n', ...
-            num_samples(i), t, FME_time_ver(i, t));
-    end
-end
-
-%
-save(fullfile(record_path, 'fme_ver.mat'), 'FME_time_ver');
-
-%%
-GFHF_time = zeros(numel(num_samples), 20);
-for i = 1 : numel(num_samples)
-    Y_tmp = samples{i,2};
-    L_tmp = lgs{i,5};
-    l_tmp = labels{i}{1};
-    for t = 1 : 20
-        tic;
-        % construct Y
-        label_ind = find(l_tmp(:,t));
-        Y = zeros(num_samples(i), n_class);
-        for cc = 1 : n_class
-            cc_ind = find(Y_tmp(label_ind) == cc);
-            Y(label_ind(cc_ind), cc) = 1;
-        end
-        Y = sparse(Y);
-        % compute F
-        label_ind = find(l_tmp(:,t));
-        unlabel_ind = find(~l_tmp(:,t));
-        F = - L_tmp(unlabel_ind, unlabel_ind) \ ...
-            (L_tmp(unlabel_ind, label_ind) * Y(label_ind, :)); 
-        % normalization
-        q = sum(Y(label_ind,:),1) + 1;
-        F = F .* repmat(q ./ sum(F, 1), numel(unlabel_ind), 1);      
-        GFHF_time(i, t) = toc;
-        fprintf('GFHF: num=%d, t=%d, time=%f\n', ...
-            num_samples(i), t, GFHF_time(i, t));
-    end
-end
-
-%%
-save(fullfile(record_path, 'gfhf.mat'), 'GFHF_time');
-
-%%
-load(fullfile(record_path, 'gfhf.mat'));
-
-%%
-LGC_time = zeros(numel(num_samples), 20);
-for i = 1 : numel(num_samples)
-    Y_tmp = samples{i,2};
-    nL_tmp = lgs{i,7};
-    l_tmp = labels{i}{1};
-    for t = 1 : 20
-        tic;
-        % construct Y
-        label_ind = find(l_tmp(:,t));
-        Y = zeros(num_samples(i), n_class);
-        for cc = 1 : n_class
-            cc_ind = find(Y_tmp(label_ind) == cc);
-            Y(label_ind(cc_ind), cc) = 1;
-        end
-        Y = sparse(Y);
-        % compute F
-        F = nL_tmp \ Y; clear Y;
-        LGC_time(i, t) = toc;
-        fprintf('LGC: num=%d, t=%d, time=%f\n', ...
-            num_samples(i), t, LGC_time(i, t));
-    end
-end
-
-%%
-save(fullfile(record_path, 'lgc.mat'), 'LGC_time');
-
-%%
-load(fullfile(record_path, 'lgc.mat'));
-
-%%
-AGR_time = zeros(numel(num_samples), 20);
-for i = 1 : numel(num_samples)
+AGR_time = zeros(numel(num_features), 20);
+for i = 1 : numel(num_features)
     Y_tmp = samples{i,2};
     B_tmp = ags{i,1};
     rL_tmp = ags{i,2};
@@ -338,8 +193,8 @@ for i = 1 : numel(num_samples)
         tic;
         [~, ~, e] = AnchorGraphReg(B_tmp, rL_tmp, Y_tmp', label_ind, 0.01);
         AGR_time(i, t) = toc;
-        fprintf('AGR: num=%d, t=%d, time=%f\n', ...
-            num_samples(i), t, AGR_time(i, t));
+        fprintf('AGR: num_feature=%d, t=%d, time=%f\n', ...
+            num_features(i), t, AGR_time(i, t));
     end
 end
 %
@@ -349,8 +204,8 @@ save(fullfile(record_path, 'agr.mat'), 'AGR_time');
 load(fullfile(record_path, 'agr.mat'));
 
 %%
-EAGR_time = zeros(numel(num_samples), 20);
-for i = 1 : numel(num_samples)
+EAGR_time = zeros(numel(num_features), 20);
+for i = 1 : numel(num_features)
     Y_tmp = samples{i,2};
     Z_tmp = eags{i,1};
     rLz_tmp = eags{i,2};
@@ -360,15 +215,15 @@ for i = 1 : numel(num_samples)
         tic;
         [acc, F] = EAGReg(Z_tmp, rLz_tmp, Y_tmp', label_ind, 1);
         EAGR_time(i, t) = toc;
-        fprintf('EAGR: num=%d, t=%d, time=%f\n', ...
-            num_samples(i), t, EAGR_time(i, t));
+        fprintf('EAGR: num_feature=%d, t=%d, time=%f\n', ...
+            num_features(i), t, EAGR_time(i, t));
     end
 end
 save(fullfile(record_path, 'eagr.mat'), 'EAGR_time');
 
 %%
-MMLP_time = zeros(numel(num_samples), 20);
-for i = 1 : numel(num_samples)
+MMLP_time = zeros(numel(num_features), 20);
+for i = 1 : numel(num_features)
     X_tmp = samples{i,1};
     Y_tmp = samples{i,2};
     E_tmp = lgs{i,9};
@@ -376,8 +231,8 @@ for i = 1 : numel(num_samples)
     for t = 1 : 20
         label_ind = find(l_tmp(:,t));
         [~, e, ~, ~, MMLP_time(i, t)] = mmlp(E_tmp, X_tmp, Y_tmp, label_ind);
-        fprintf('MMLP: num=%d, t=%d, time=%f\n', ...
-            num_samples(i), t, MMLP_time(i, t));
+        fprintf('MMLP: num_feature=%d, t=%d, time=%f\n', ...
+            num_features(i), t, MMLP_time(i, t));
     end
 end
 
@@ -388,8 +243,8 @@ save(fullfile(record_path, 'mmlp.mat'), 'MMLP_time');
 load(fullfile(record_path, 'mmlp.mat'));
 
 %%
-MTC_time = zeros(numel(num_samples), 20);
-for i = 1 : numel(num_samples)
+MTC_time = zeros(numel(num_features), 20);
+for i = 1 : numel(num_features)
     Y_tmp = samples{i,2};
     e_tmp = lgs{i,11};
     l_tmp = labels{i}{1};
@@ -397,14 +252,14 @@ for i = 1 : numel(num_samples)
         tic;
         label_ind = find(l_tmp(:,t));
         % construct Y    
-        Y = zeros(num_samples(i), 1)-1;
+        Y = zeros(num_samples, 1)-1;
         Y(label_ind) = Y_tmp(label_ind) - 1;
         % compute F
-        F = mtc_matlab(full(e_tmp), num_samples(i), Y, n_class, 0, 1);
+        F = mtc_matlab(full(e_tmp), num_samples, Y, n_class, 0, 1);
         F = F + 1;
         MTC_time(i, t) = toc;
-        fprintf('MTC: num=%d, t=%d, time=%f\n', ...
-            num_samples(i), t, MTC_time(i, t));
+        fprintf('MTC: num_feature=%d, t=%d, time=%f\n', ...
+            num_features(i), t, MTC_time(i, t));
     end
 end
 
@@ -415,8 +270,8 @@ save(fullfile(record_path, 'mtc.mat'), 'MTC_time');
 load(fullfile(record_path, 'mtc.mat'));
 
 %%
-LAPRLS_time = zeros(numel(num_samples), 20);
-for i = 1 : numel(num_samples)
+LAPRLS_time = zeros(numel(num_features), 20);
+for i = 1 : numel(num_features)
     X_tmp = samples{i,1};
     Y_tmp = samples{i,2};
     L_tmp = lgs{i,5};
@@ -445,8 +300,8 @@ for i = 1 : numel(num_samples)
         b = 1/nLabel*(sum(YLabel,1)' - W'*(feaLabel*ones(nLabel,1)));
         
         LAPRLS_time(i, t) = toc;
-        fprintf('laprls: num=%d, t=%d, time=%f\n', ...
-            num_samples(i), t, LAPRLS_time(i, t));
+        fprintf('laprls: num_feature=%d, t=%d, time=%f\n', ...
+            num_features(i), t, LAPRLS_time(i, t));
     end
 end
 
@@ -457,12 +312,12 @@ save(fullfile(record_path, 'laprls.mat'), 'LAPRLS_time');
 load(fullfile(record_path, 'laprls.mat'));
 
 %%
-fFME_time = zeros(numel(num_samples), 20);
+fFME_time = zeros(numel(num_features), 20);
 p.ul = 1e9;
 p.uu = 0;
 p.mu = 1e-9;
 p.gamma = 1e-9;
-for i = 1 : numel(num_samples)
+for i = 1 : numel(num_features)
     X_tmp = samples{i,1};
     Y_tmp = samples{i,2};
     B_tmp = ags{i,1};
@@ -470,7 +325,7 @@ for i = 1 : numel(num_samples)
     for t = 1 : 20
         tic;
         label_ind = find(l_tmp(:,t));
-        Y = zeros(num_samples(i), n_class);
+        Y = zeros(num_samples, n_class);
         for cc = 1 : n_class
             cc_ind = find(Y_tmp(label_ind) == class(cc));
             Y(label_ind(cc_ind),cc) = 1;
@@ -478,8 +333,8 @@ for i = 1 : numel(num_samples)
         Y = sparse(Y);
         [W, b, F_train] = fastFME_semi(X_tmp, B_tmp, Y, p);
         fFME_time(i, t) = toc;
-        fprintf('fFME: num=%d, t=%d, time=%f\n', ...
-            num_samples(i), t, fFME_time(i, t));
+        fprintf('fFME: num_feature=%d, t=%d, time=%f\n', ...
+            num_features(i), t, fFME_time(i, t));
     end
 end
 
@@ -490,12 +345,12 @@ save(fullfile(record_path, 'ffme.mat'), 'fFME_time');
 load(fullfile(record_path, 'ffme.mat'));
 
 %%
-efFME_time = zeros(numel(num_samples), 20);
+efFME_time = zeros(numel(num_features), 20);
 p.ul = 1e9;
 p.uu = 0;
 p.mu = 1e-9;
 p.gamma = 1e-9;
-for i = 1 : numel(num_samples)
+for i = 1 : numel(num_features)
     X_tmp = samples{i,1};
     Y_tmp = samples{i,2};
     Z_tmp = eags{i,1};
@@ -503,7 +358,7 @@ for i = 1 : numel(num_samples)
     for t = 1 : 20
         tic;
         label_ind = find(l_tmp(:,t));
-        Y = zeros(num_samples(i), n_class);
+        Y = zeros(num_samples, n_class);
         for cc = 1 : n_class
             cc_ind = find(Y_tmp(label_ind) == class(cc));
             Y(label_ind(cc_ind),cc) = 1;
@@ -511,19 +366,19 @@ for i = 1 : numel(num_samples)
         Y = sparse(Y);
         [W, b, F_train] = fastFME_semi(X_tmp, Z_tmp, Y, p);
         efFME_time(i, t) = toc;
-        fprintf('efFME: num=%d, t=%d, time=%f\n', ...
-            num_samples(i), t, efFME_time(i, t));
+        fprintf('efFME: num_feature=%d, t=%d, time=%f\n', ...
+            num_features(i), t, efFME_time(i, t));
     end
 end
-%save(fullfile(record_path, 'effme.mat'), 'efFME_time');
+save(fullfile(record_path, 'effme.mat'), 'efFME_time');
 
 %%
-aFME_time = zeros(numel(num_samples), 20);
+aFME_time = zeros(numel(num_features), 20);
 p.ul = 1e9;
 p.uu = 0;
 p.mu = 1e-9;
 p.gamma = 1e-9;
-for i = 1 : numel(num_samples)
+for i = 1 : numel(num_features)
     anchor = eags{i,5};
     Y_tmp = samples{i,2};
     Z_tmp = eags{i,1};
@@ -532,7 +387,7 @@ for i = 1 : numel(num_samples)
     for t = 1 : 20
         tic;
         label_ind = find(l_tmp(:,t));
-        Y = zeros(num_samples(i), n_class);
+        Y = zeros(num_samples, n_class);
         for cc = 1 : n_class
             cc_ind = find(Y_tmp(label_ind) == class(cc));
             Y(label_ind(cc_ind),cc) = 1;
@@ -540,8 +395,27 @@ for i = 1 : numel(num_samples)
         Y = sparse(Y);
         [W, b, F_train] = aFME_semi(anchor, Z_tmp, rLz_tmp, Y, p);
         aFME_time(i, t) = toc;
-        fprintf('aFME: num=%d, t=%d, time=%f\n', ...
-            num_samples(i), t, aFME_time(i, t));
+        fprintf('aFME: num_feature=%d, t=%d, time=%f\n', ...
+            num_features(i), t, aFME_time(i, t));
     end
 end
 save(fullfile(record_path, 'afme.mat'), 'aFME_time');
+
+%%
+load(fullfile(record_path, 'afme.mat'));
+load(fullfile(record_path, 'effme.mat'));
+load(fullfile(record_path, 'laprls.mat'));
+
+aFME_time = mean(aFME_time, 2)'
+efFME_time = mean(efFME_time, 2)'
+LAPRLS_time = mean(LAPRLS_time, 2)'
+
+fileID = fopen(fullfile(record_path, 'feature_run_time.txt'),'w');
+fprintf(fileID, '\\#Features & %d & %d & %d & %d & %d \\\\ \n', num_features);
+fprintf(fileID,'%s & %.4f & %.4f & %.4f & %.4f & %.4f \\\\ \n',...
+    'fFME', efFME_time);
+fprintf(fileID,'%s & %.4f & %.4f & %.4f & %.4f & %.4f \\\\ \n',...
+    'LAPRLS', LAPRLS_time);
+fprintf(fileID,'%s & %.4f & %.4f & %.4f & %.4f & %.4f \\\\ \n',...
+    'aFME', aFME_time);
+fclose(fileID);
