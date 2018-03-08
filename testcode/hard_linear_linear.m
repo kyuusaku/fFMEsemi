@@ -31,6 +31,7 @@ if strcmp(test_type, 'linear')
     gnd = ones(8000, 1);
     gnd(4001:8000) = 2;
 end
+gs=12;
 gscatter(fea(1,:)', fea(2,:)', gnd, 'rc', 'x.', gs, gs, 'off');
 % axis off;
 print(gcf,'-dpng',fullfile(record_path, 'data.png'));
@@ -45,7 +46,7 @@ if ~exist(data, 'file')
 
     label = false(4000, 1);
     label([1000,3000]) = true;
-    gs=12;
+    
     gscatter(X_train(1,:)', X_train(2,:)', Y_train, 'rc', 'x.', gs, gs, 'off');
     hold on;
     [r, c] = find(label);
@@ -53,9 +54,9 @@ if ~exist(data, 'file')
     hold on;
     plot(X_train(1,r(2))', X_train(2,r(2))', 'bo', 'MarkerSize', 8, 'LineWidth', 8);
     axis off;
-    print(gcf,'-dpng',fullfile(record_path, 'gnd.png'));
+    print(gcf,'-dpng',fullfile(record_path, 't-gnd.png'));
     % save
-    save(data, 'X_train', 'Y_train', 'X_test', 'Y_test');
+    save(data, 'X_train', 'Y_train', 'X_test', 'Y_test', 'label');
 else
     load(data);
 end
@@ -69,6 +70,37 @@ if ~exist(ag_data, 'file')
 else
     load(ag_data);
 end
+
+%% compute efficient anchor graph
+eag_data = fullfile(record_path, 'eag.mat');
+if ~exist(eag_data, 'file')
+    %[~, anchor, kmeans_time] = k_means(X_train, para.num_anchor);
+    Z = cell(numel(para.beta), 1);
+    rLz = cell(numel(para.beta), 1);
+    eag_time = zeros(numel(para.beta), 1);
+    for i = 1:numel(para.beta)
+        tic;[Z{i}] = FLAE(anchor', X_train', para.knn, para.beta(i));
+        % Normalized graph Laplacian
+        W=Z{i}'*Z{i};
+        Dt=diag(sum(W).^(-1/2));
+        S=Dt*W*Dt;
+        rLz{i}=eye(para.num_anchor,para.num_anchor)-S; eag_time(i) = toc;
+    end
+    save(eag_data, 'Z', 'rLz', 'eag_time', 'kmeans_time', 'anchor');
+else
+    load(eag_data);
+end
+
+%% run EAGR
+best_gamma = [];
+eagr_data_para_best = fullfile(record_path, 'result_EAGR_para_best.mat');
+if ~exist(eagr_data_para_best, 'file')
+    result_EAGR_para_best = run_EAGR_para(Y_train, Z, rLz, {label}, best_gamma, para);
+    save(eagr_data_para_best, 'result_EAGR_para_best');
+else
+    load(eagr_data_para_best);
+end
+celldisp(result_EAGR_para_best);
 
 %% run fast FME
 mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
@@ -97,15 +129,65 @@ end
 Y = sparse(Y);
 p.ul = 1e9;
 p.uu = 0;
-p.mu = 1e-3;
-p.gamma = 1e9;
+p.mu = result_fastFME1_1e9_para_best{1}.best_train_para(1);
+p.gamma = result_fastFME1_1e9_para_best{1}.best_train_para(2);
 [W, b, F_train] = fastFME_semi(X_train, B, Y, p);
 [~, F] = max(F_train,[],2);
 
 figure;
 gscatter(X_train(1,:)', X_train(2,:)', F, 'rc', 'x.', gs, gs, 'off');
 axis off;
-print(gcf,'-dpng',fullfile(record_path, 'ffme.png'));
+print(gcf,'-dpng',fullfile(record_path, 't-ffme.png'));
+
+%% run efFME
+mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
+gamma = mu;
+best_beta = result_EAGR_para_best{1}.best_id(1)
+effme_data_1_1e9_para_best = fullfile(record_path, 'result_efFME1_1e9_para_best2.mat');
+if ~exist(effme_data_1_1e9_para_best, 'file')
+    result_efFME1_1e9_para_best = run_fastFME_semi_para(X_train, Y_train, X_test, Y_test, ...
+        Z{best_beta}, {label}, 1e9, mu, gamma);
+    save(effme_data_1_1e9_para_best, 'result_efFME1_1e9_para_best');
+else
+    load(effme_data_1_1e9_para_best);
+end
+celldisp(result_efFME1_1e9_para_best);
+
+%% draw efFME
+p.mu = result_efFME1_1e9_para_best{1}.best_train_para(1);
+p.gamma = result_efFME1_1e9_para_best{1}.best_train_para(2);
+[W, b, F_train] = fastFME_semi(X_train, Z{best_beta}, Y, p);
+[~, F] = max(F_train,[],2);
+
+figure;
+gscatter(X_train(1,:)', X_train(2,:)', F, 'rc', 'x.', gs, gs, 'off');
+axis off;
+print(gcf,'-dpng',fullfile(record_path, 't-effme.png'));
+
+%% run aFME
+mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
+gamma = mu;
+best_beta = result_EAGR_para_best{1}.best_id(1)
+afme_data_1e9_para_best = fullfile(record_path, 'result_aFME_1e9_para_best.mat');
+if ~exist(afme_data_1e9_para_best, 'file')
+    result_aFME_1e9_para_best = run_aFME_semi_para(X_train, Y_train, X_test, Y_test, anchor, ...
+        Z{best_beta}, rLz{best_beta}, {label}, 1e9, mu, gamma);
+    save(afme_data_1e9_para_best, 'result_aFME_1e9_para_best');
+else
+    load(afme_data_1e9_para_best);
+end
+celldisp(result_aFME_1e9_para_best);
+
+%% draw aFME
+p.mu = result_aFME_1e9_para_best{1}.best_train_para(1);
+p.gamma = result_aFME_1e9_para_best{1}.best_train_para(2);
+[~, ~, F_train] = aFME_semi(anchor, Z{best_beta}, rLz{best_beta}, Y, p);
+[~, F] = max(F_train,[],2);
+
+figure;
+gscatter(X_train(1,:)', X_train(2,:)', F, 'rc', 'x.', gs, gs, 'off');
+axis off;
+print(gcf,'-dpng',fullfile(record_path, 't-afme.png'));
 
 %% E_max
 emax_data = fullfile(record_path, 'E_max.mat');
@@ -155,4 +237,4 @@ F_train = X_train' * W + ones(size(X_train, 2), 1) * b';
 figure;
 gscatter(X_train(1,:)', X_train(2,:)', F, 'rc', 'x.', gs, gs, 'off');
 axis off;
-print(gcf,'-dpng',fullfile(record_path, 'laprls.png'));  
+print(gcf,'-dpng',fullfile(record_path, 't-laprls.png'));  

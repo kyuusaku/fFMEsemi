@@ -48,7 +48,7 @@ plot(num_anchors, aFME_test(:,1), '--mp', 'MarkerSize', m_size); hold on;
 
 legend('FME unlabel','FME test','f-FME unlabel','f-FME test','a-FME unlabel','a-FME test',...
     'Location','SouthEast');
-set(gca,'YLim',[30,100]);
+set(gca,'YLim',[20,100]);
 set(gca,'XLim',[min(num_anchors),max(num_anchors)]);
 xlabel('Number of anchors','FontSize',f_size);
 ylabel('Unlabel & Test accuracy','FontSize',f_size);
