@@ -21,7 +21,9 @@ end
 %
 runFME = p.Results.runFME;
 %% para
-save_path = ['result/' p.Results.dataset dl_method '/semi-a' num2str(p.Results.anchorNumber)];
+seed = strfind(fea_file, 'seed');
+seed = ['-seed' fea_file(seed(1) + 4)];
+save_path = ['result/' p.Results.dataset dl_method '/semi-a' num2str(p.Results.anchorNumber) seed];
 if ~exist(save_path, 'dir')
     mkdir(save_path);
 end
@@ -158,6 +160,20 @@ else
     load(eagr_data_para_best);
 end
 celldisp(result_EAGR_para_best);
+
+%% run efFME
+mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
+gamma = mu;
+best_beta = result_EAGR_para_best{1}.best_id(1)
+effme_data_1_1e9_para_best = fullfile(record_path, 'result_efFME1_1e9_para_best2.mat');
+if ~exist(effme_data_1_1e9_para_best, 'file')
+    result_efFME1_1e9_para_best = run_fastFME_semi_para(X_train, Y_train, X_test, Y_test, ...
+        Z{best_beta}, label, 1e9, mu, gamma);
+    save(effme_data_1_1e9_para_best, 'result_efFME1_1e9_para_best');
+else
+    load(effme_data_1_1e9_para_best);
+end
+celldisp(result_efFME1_1e9_para_best);
 
 %% run aFME
 mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
@@ -328,6 +344,7 @@ celldisp(result_MTC_para);
 celldisp(result_NN_para);
 celldisp(result_LapRLS2_para_best);
 celldisp(result_fastFME1_1e9_para_best);
+celldisp(result_efFME1_1e9_para_best);
 celldisp(result_aFME_1e9_para_best);
 if runFME
 celldisp(result_FME1_1_para_best);
