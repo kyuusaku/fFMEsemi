@@ -145,7 +145,7 @@ for j in range(10):
 txs = np.concatenate(txs, axis=0)
 tys = np.concatenate(tys, axis=0)
 
-tys_matrix = np.zeros((tys.shape[0], 10))
+tys_matrix = np.zeros((tys.shape[0], 10), dtype=np.float32)
 tys_matrix[np.arange(tys.shape[0]), tys] = 1
 
 trainx_permutation = trainx.copy()
