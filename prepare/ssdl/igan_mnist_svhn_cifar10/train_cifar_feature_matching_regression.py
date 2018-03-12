@@ -77,7 +77,7 @@ disc_layers.append(nn.weight_norm(dnn.Conv2DDNNLayer(disc_layers[-1], 192, (3,3)
 disc_layers.append(nn.weight_norm(ll.NINLayer(disc_layers[-1], num_units=192, W=Normal(0.05), nonlinearity=nn.lrelu)))
 disc_layers.append(nn.weight_norm(ll.NINLayer(disc_layers[-1], num_units=192, W=Normal(0.05), nonlinearity=nn.lrelu)))
 disc_layers.append(ll.GlobalPoolLayer(disc_layers[-1]))
-disc_layers.append(nn.weight_norm(ll.DenseLayer(disc_layers[-1], num_units=10, W=Normal(0.05), nonlinearity=None), train_g=True, init_stdv=0.1))
+disc_layers.append(nn.weight_norm(ll.DenseLayer(disc_layers[-1], num_units=10, W=Normal(0.05), nonlinearity=T.nnet.sigmoid), train_g=True, init_stdv=0.1))
 disc_params = ll.get_all_params(disc_layers, trainable=True)
 
 # costs
@@ -93,8 +93,10 @@ output_lab = ll.get_output(disc_layers[-1], x_lab, deterministic=False)
 output_unl = ll.get_output(disc_layers[-1], x_unl, deterministic=False)
 output_gen = ll.get_output(disc_layers[-1], gen_dat, deterministic=False)
 
-loss_lab = T.mean(T.sum(T.pow(output_lab - label_matrix, 2), axis=1)) # Squared Error
-#l_gen = T.mean(T.sum(T.pow(output_gen, 2), axis=1)) # L2 norm
+loss_lab = T.sum(T.pow(output_lab - label_matrix, 2), axis=1) # Squared Error
+l_gen = T.sum(T.pow(output_gen, 2), axis=1) # L2 norm
+l_unl = T.sum(output_unl * T.log(output_unl), axis=1)
+loss_unl = -0.5*l_unl + 0.5*l_gen
 """
 log_gen = output_gen - nn.log_sum_exp(output_gen).dimshuffle(0,'x')
 ent_gen = T.mean(T.sum(T.exp(log_gen) * log_gen, axis=1))
@@ -102,9 +104,12 @@ log_fx = output_unl - nn.log_sum_exp(output_unl).dimshuffle(0,'x')
 ent_fx = T.mean(T.sum(T.exp(log_fx) * log_fx, axis=1)) # Entropy loss
 loss_unl = -0.5*ent_fx + 0.5*ent_gen
 """
+"""
 l_unl = nn.log_sum_exp(output_unl)
 l_gen = nn.log_sum_exp(output_gen)
 loss_unl = -0.5*T.mean(l_unl) + 0.5*T.mean(T.nnet.softplus(l_unl)) + 0.5*T.mean(T.nnet.softplus(l_gen))
+"""
+
 
 train_err = T.mean(T.neq(T.argmax(output_lab,axis=1),labels))
 
