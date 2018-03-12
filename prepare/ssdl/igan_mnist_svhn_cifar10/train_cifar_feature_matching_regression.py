@@ -94,10 +94,12 @@ output_unl = ll.get_output(disc_layers[-1], x_unl, deterministic=False)
 output_gen = ll.get_output(disc_layers[-1], gen_dat, deterministic=False)
 
 loss_lab = T.mean(T.sum(T.pow(output_lab - label_matrix, 2), axis=1)) # Squared Error
-l_gen = T.mean(T.sum(T.pow(output_gen, 2), axis=1)) # L2 norm
+#l_gen = T.mean(T.sum(T.pow(output_gen, 2), axis=1)) # L2 norm
+log_gen = output_gen - nn.log_sum_exp(output_gen).dimshuffle(0,'x')
+ent_gen = T.mean(T.sum(T.exp(log_gen) * log_gen, axis=1))
 log_fx = output_unl - nn.log_sum_exp(output_unl).dimshuffle(0,'x')
-loss_entropy = T.mean(T.sum(T.exp(log_fx) * log_fx, axis=1)) # Entropy loss
-loss_unl = -0.5*loss_entropy + 0.5*l_gen
+ent_fx = T.mean(T.sum(T.exp(log_fx) * log_fx, axis=1)) # Entropy loss
+loss_unl = -0.5*ent_fx + 0.5*ent_gen
 
 train_err = T.mean(T.neq(T.argmax(output_lab,axis=1),labels))
 
@@ -147,6 +149,9 @@ tys = np.concatenate(tys, axis=0)
 
 tys_matrix = np.zeros((tys.shape[0], 10), dtype=np.float32)
 tys_matrix[np.arange(tys.shape[0]), tys] = 1
+
+print(tys)
+print(tys_matrix)
 
 trainx_permutation = trainx.copy()
 trainy_permutation = trainy.copy()
