@@ -96,7 +96,7 @@ output_gen = ll.get_output(disc_layers[-1], gen_dat, deterministic=False)
 loss_lab = T.mean(T.sum(T.pow(output_lab - label_matrix, 2), axis=1)) # Squared Error
 l_gen = T.mean(T.sum(T.pow(output_gen, 2), axis=1)) # L2 norm
 l_unl = T.mean(T.pow(T.max(output_unl) - 1, 2))
-loss_unl = -0.5*l_unl + 0.5*l_gen
+loss_unl = 0.5*l_unl + 0.5*l_gen
 """
 log_gen = output_gen - nn.log_sum_exp(output_gen).dimshuffle(0,'x')
 ent_gen = T.mean(T.sum(T.exp(log_gen) * log_gen, axis=1))
