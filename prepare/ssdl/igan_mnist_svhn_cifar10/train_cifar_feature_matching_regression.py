@@ -94,10 +94,10 @@ output_unl = ll.get_output(disc_layers[-1], x_unl, deterministic=False)
 output_gen = ll.get_output(disc_layers[-1], gen_dat, deterministic=False)
 
 loss_lab = T.mean(T.sum(T.pow(output_lab - label_matrix, 2), axis=1)) # Squared Error
-l_gen = T.mean(T.sum(T.pow(output_gen, 2), axis=1)) # L2 norm
+#l_gen = T.mean(T.sum(T.pow(output_gen, 2), axis=1)) # L2 norm
 #l_unl = T.mean(T.pow(T.max(output_unl) - 1, 2))
-l_unl = T.mean(T.pow(T.max(output_unl) - 1, 2)) + T.mean(T.sum(T.pow(output_unl, 2), axis=1)) 
-loss_unl = 0.5*l_unl + 0.5*l_gen
+#l_unl = T.mean(T.pow(T.max(output_unl) - 1, 2)) + T.mean(T.sum(T.pow(output_unl, 2), axis=1)) 
+#loss_unl = 0.5*l_unl + 0.5*l_gen
 """
 log_gen = output_gen - nn.log_sum_exp(output_gen).dimshuffle(0,'x')
 ent_gen = T.mean(T.sum(T.exp(log_gen) * log_gen, axis=1))
@@ -105,11 +105,11 @@ log_fx = output_unl - nn.log_sum_exp(output_unl).dimshuffle(0,'x')
 ent_fx = T.mean(T.sum(T.exp(log_fx) * log_fx, axis=1)) # Entropy loss
 loss_unl = -0.5*ent_fx + 0.5*ent_gen
 """
-"""
+
 l_unl = nn.log_sum_exp(output_unl)
 l_gen = nn.log_sum_exp(output_gen)
 loss_unl = -0.5*T.mean(l_unl) + 0.5*T.mean(T.nnet.softplus(l_unl)) + 0.5*T.mean(T.nnet.softplus(l_gen))
-"""
+
 
 
 train_err = T.mean(T.neq(T.argmax(output_lab,axis=1),labels))
@@ -158,8 +158,8 @@ for j in range(10):
 txs = np.concatenate(txs, axis=0)
 tys = np.concatenate(tys, axis=0)
 
-tys_matrix = np.zeros((tys.shape[0], 10), dtype=np.float32)
-tys_matrix[np.arange(tys.shape[0]), tys] = 1
+tys_matrix = np.zeros((tys.shape[0], 10), dtype=np.float32) - 2.2
+tys_matrix[np.arange(tys.shape[0]), tys] = 2.2
 
 print(tys)
 print(tys_matrix)
