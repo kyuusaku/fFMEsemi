@@ -36,19 +36,19 @@ save([save_path 'data.mat'],'FME_train','FME_test','fFME_train','fFME_test','aFM
 load([save_path 'data.mat']);
 
 h1=figure(1);
-m_size = 10;
-f_size = 16;
+m_size = 15;
+f_size = 21;
 
-plot(num_anchors, repmat(FME_train(1),numel(num_anchors),1), '-k'); hold on;
-plot(num_anchors, repmat(FME_test(1),numel(num_anchors),1), '--k'); hold on;
-plot(num_anchors, fFME_train(:,1), '-r^', 'MarkerSize', m_size); hold on;
-plot(num_anchors, fFME_test(:,1), '--r^', 'MarkerSize', m_size); hold on;
-plot(num_anchors, aFME_train(:,1), '-mp', 'MarkerSize', m_size); hold on;
-plot(num_anchors, aFME_test(:,1), '--mp', 'MarkerSize', m_size); hold on;
+plot(num_anchors, repmat(FME_train(1),numel(num_anchors),1), '-k', 'LineWidth', 2); hold on;
+plot(num_anchors, repmat(FME_test(1),numel(num_anchors),1), '--k', 'LineWidth', 2); hold on;
+plot(num_anchors, fFME_train(:,1), '-b+', 'MarkerSize', m_size, 'LineWidth', 2); hold on;
+plot(num_anchors, fFME_test(:,1), '--b+', 'MarkerSize', m_size, 'LineWidth', 2); hold on;
+plot(num_anchors, aFME_train(:,1), '-m^', 'MarkerSize', m_size, 'LineWidth', 2); hold on;
+plot(num_anchors, aFME_test(:,1), '--m^', 'MarkerSize', m_size, 'LineWidth', 2); hold on;
 
-legend('FME unlabel','FME test','f-FME unlabel','f-FME test','a-FME unlabel','a-FME test',...
+legend('FME(unlabel)','FME(test)','f-FME(unlabel)','f-FME(test)','r-FME(unlabel)','r-FME(test)',...
     'Location','SouthEast');
-set(gca,'YLim',[20,100]);
+set(gca,'YLim',[0,100]);
 set(gca,'XLim',[min(num_anchors),max(num_anchors)]);
 xlabel('Number of anchors','FontSize',f_size);
 ylabel('Unlabel & Test accuracy','FontSize',f_size);

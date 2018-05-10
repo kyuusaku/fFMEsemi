@@ -76,21 +76,22 @@ end
 
 %%
 h1=figure(1);
-m_size = 10;
-f_size = 16;
+m_size = 15;
+f_size = 21;
 %subplot(1,2,1);
-plot(std,agr_train, '-.c', 'MarkerSize',m_size);hold on;
-plot(std,eagr_train, '--co', 'MarkerSize',m_size);hold on;
-plot(std,mmlp_train, '--m<', 'MarkerSize',m_size);hold on;
-plot(std,mtc_train, '--m>', 'MarkerSize',m_size);hold on;
-plot(std,nn_train, '--k*', 'MarkerSize',m_size);hold on;
-plot(std,laprls_train, '--bs', 'MarkerSize',m_size);hold on;
+plot(std,agr_train, '--k', 'LineWidth', 2, 'MarkerSize',m_size);hold on;
+plot(std,eagr_train, '-.k+', 'LineWidth', 2, 'MarkerSize',m_size);hold on;
+plot(std,mmlp_train, '--m<', 'LineWidth', 2, 'MarkerSize',m_size);hold on;
+plot(std,mtc_train, '--m+', 'LineWidth', 2, 'MarkerSize',m_size);hold on;
+plot(std,nn_train, '--r+', 'LineWidth', 2, 'MarkerSize',m_size);hold on;
+plot(std,laprls_train, '--rs', 'LineWidth', 2, 'MarkerSize',m_size);hold on;
 %plot(std,ffme_train, '-rd', 'LineWidth', 2, 'MarkerSize',m_size);hold on;
-plot(std,effme_train, '-rd', 'LineWidth', 2, 'MarkerSize',m_size);hold on;
-plot(std,afme_train, '-r^', 'LineWidth', 2, 'MarkerSize',m_size);hold on;
-legend('AGR','EAGR','MMLP','MTC','NN','LapRLS/L','f-FME','a-FME',...
+plot(std,effme_train, '-bd', 'LineWidth', 2, 'MarkerSize',m_size);hold on;
+plot(std,afme_train, '-b^', 'LineWidth', 2, 'MarkerSize',m_size);hold on;
+legend('AGR','EAGR','MMLP','MTC','NN','LapRLS/L','f-FME','r-FME',...
     'Location','SouthWest');
 set(gca,'YLim',[75,100]);
+set(gca,'XLim',[0.01,0.07]);
 xlabel('Variance of the Gaussian function','FontSize',f_size);
 ylabel('Unlabel accuracy','FontSize',f_size);
 set(gca,'FontSize',f_size);
@@ -99,16 +100,17 @@ print(h1,'-dpng',fullfile(save_path, 'g-unlabel.png'));
 %%
 h2=figure(2);
 %subplot(1,2,2);
-plot(std,nn_test, '--k*', 'MarkerSize',m_size);hold on;
-plot(std,laprls_test, '--bs', 'MarkerSize',m_size);hold on;
+plot(std,nn_test, '--r*', 'LineWidth', 2, 'MarkerSize',m_size);hold on;
+plot(std,laprls_test, '--rs', 'LineWidth', 2, 'MarkerSize',m_size);hold on;
 %plot(std,ffme_test, '-rd', 'LineWidth', 2, 'MarkerSize',m_size);hold on;
-plot(std,effme_test, '-rd', 'LineWidth', 2, 'MarkerSize',m_size);hold on;
-plot(std,afme_test, '-r^', 'LineWidth', 2, 'MarkerSize',m_size);hold on;
-legend('NN','LapRLS/L','f-FME','a-FME',...
+plot(std,effme_test, '-bd', 'LineWidth', 2, 'MarkerSize',m_size);hold on;
+plot(std,afme_test, '-b^', 'LineWidth', 2, 'MarkerSize',m_size);hold on;
+legend('NN','LapRLS/L','f-FME','r-FME',...
     'Location','SouthWest');
 %set(gca, 'XTick', std);
 %set(gca, 'XTickLabel', {'3,750','7,500','15,000','30,000','60,000'});
 set(gca,'YLim',[75,100]);
+set(gca,'XLim',[0.01,0.07]);
 %grid on;
 xlabel('Variance of the Gaussian function','FontSize',f_size);
 ylabel('Test accuracy','FontSize',f_size);
