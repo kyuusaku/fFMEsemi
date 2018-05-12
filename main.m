@@ -10,19 +10,19 @@ run_experiment_semi_with_dl_un('cifar10','_igan_feature_matching_unsupervised_en
 %%
 run_experiment_semi_with_dl('cifar10','_igan_feature_matching',...
     'prepare/ssdl/igan_mnist_svhn_cifar10/output/cifar_feature_matching/seed1_seeddata1_count400/fea.mat',...
-    400,'anchorNumber',1000)
+    400,'anchorNumber',4000)
 run_experiment_semi_with_dl('cifar10','_igan_feature_matching',...
     'prepare/ssdl/igan_mnist_svhn_cifar10/output/cifar_feature_matching/seed2_seeddata2_count400/fea.mat',...
-    400,'anchorNumber',1000)
+    400,'anchorNumber',2000)
 run_experiment_semi_with_dl('cifar10','_igan_feature_matching',...
     'prepare/ssdl/igan_mnist_svhn_cifar10/output/cifar_feature_matching/seed3_seeddata3_count400/fea.mat',...
-    400,'anchorNumber',1000)
+    400,'anchorNumber',2000)
 run_experiment_semi_with_dl('cifar10','_igan_feature_matching',...
     'prepare/ssdl/igan_mnist_svhn_cifar10/output/cifar_feature_matching/seed4_seeddata4_count400/fea.mat',...
-    400,'anchorNumber',1000)
+    400,'anchorNumber',2000)
 run_experiment_semi_with_dl('cifar10','_igan_feature_matching',...
     'prepare/ssdl/igan_mnist_svhn_cifar10/output/cifar_feature_matching/seed5_seeddata5_count400/fea.mat',...
-    400,'anchorNumber',1000)
+    400,'anchorNumber',2000)
 
 %% unsupervised entropy
 run_experiment_semi_with_dl_un('mnist','_igan_feature_matching_unsupervised_entropy',...
@@ -62,12 +62,12 @@ run_experiment_semi('usps',10,'anchorNumber',1000)
 run_experiment_semi('coil100',10,'anchorNumber',100,'runFME',true)
 run_experiment_semi('coil100',10,'anchorNumber',50)
 run_experiment_semi('coil100',10,'anchorNumber',200)
-run_experiment_semi('coil100',10,'anchorNumber',300)
+%run_experiment_semi('coil100',10,'anchorNumber',300)
 run_experiment_semi('coil100',10,'anchorNumber',400)
 run_experiment_semi('coil100',10,'anchorNumber',600)
-run_experiment_semi('coil100',10,'anchorNumber',700)
+%run_experiment_semi('coil100',10,'anchorNumber',700)
 run_experiment_semi('coil100',10,'anchorNumber',800)
-run_experiment_semi('coil100',10,'anchorNumber',900)
+%run_experiment_semi('coil100',10,'anchorNumber',900)
 run_experiment_semi('coil100',10,'anchorNumber',1000)
 run_experiment_semi('coil100',10,'anchorNumber',1200)
 run_experiment_semi('coil100',10,'anchorNumber',1400)
