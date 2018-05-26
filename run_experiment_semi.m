@@ -10,6 +10,7 @@ addpath(genpath('./baselines'));
 addpath(genpath('./mmlp'));
 addpath(genpath('./framework'));
 addpath(genpath('./fFME'));
+addpath('testcode');
 % parse inputs
 p = parse_inputs();
 parse(p,dataset,o,varargin{:});

@@ -1,4 +1,4 @@
-function [W, b, F] = aFME_semi(X, Z, rLz, Y, para)
+function [W, b, F] = aFME_semi(X, Z, rLz, Y, para, class_norm)
 % INPUT
 %     X: f*m matrix, each colomn is a data point
 %     Z: n*m matrix, sample adaptive weights
@@ -31,3 +31,7 @@ A = (rLz + Z'*U*Z + para.mu*eye(m) - (para.mu/m)*ones(m,1)*ones(1,m) ...
 F = Z*A;
 W = W*A;
 b = 1/m*(sum(A,1)' - W'*(X*ones(m,1)));
+
+if class_norm
+    F = F * diag(sum(F).^-1);
+end

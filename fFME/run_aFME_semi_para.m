@@ -1,5 +1,5 @@
 function result_aFME = run_aFME_semi_para(...
-    X_train, Y_train, X_test, Y_test, anchor, Z, rLz, label, ul, mu, gamma)
+    X_train, Y_train, X_test, Y_test, anchor, Z, rLz, label, ul, mu, gamma, class_norm)
 
 %% default parameters
 if ~exist('ul', 'var') || isempty(ul)
@@ -23,7 +23,7 @@ result_aFME = cell(np, 1);
 for i = 1 : np
     [errs, best_train, best_test, average_time] = ...
         iner_run_aFME_semi(Z, rLz, X_train, Y_train, X_test, Y_test, anchor, class, ...
-        label{i}, mu, gamma, ul, uu);
+        label{i}, mu, gamma, ul, uu, class_norm);
     result.accuracy = 100*(1 - errs);
     result.best_train_accuracy = [100*(1-best_train(1,1)), 100*best_train(1,2)];
     result.best_train_para = [best_train(2,1), best_train(2,2)];
@@ -41,7 +41,7 @@ fprintf('done.\n');
 end
 
 function [errs, best_train, best_test, average_time] = iner_run_aFME_semi(Z, rLz, ...
-    X_train, Y_train, X_test, Y_test, anchor, class, label, mu, gamma, ul, uu)
+    X_train, Y_train, X_test, Y_test, anchor, class, label, mu, gamma, ul, uu, class_norm)
 n = size(X_train, 2);
 n_class = numel(class);
 iter = size(label, 2);
@@ -67,7 +67,7 @@ for pmu = 1 : n_mu
             end
             Y = sparse(Y);
 
-            [W, b, F_train] = aFME_semi(anchor, Z, rLz, Y, p);
+            [W, b, F_train] = aFME_semi(anchor, Z, rLz, Y, p, class_norm);
             times(pmu, pgamma, t) = toc;
 
             [~, predictions] = max(F_train, [], 2); clear F_train;

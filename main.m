@@ -1,6 +1,6 @@
 %%
 clear;
-parpool(12);
+parpool(4);
 
 %%
 run_experiment_semi('usps',10,'anchorNumber',50)
