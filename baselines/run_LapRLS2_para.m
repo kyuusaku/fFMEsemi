@@ -11,11 +11,14 @@ if exist('s', 'var') && ~isempty(s)
     s_para = s;
 end
 
-gammaA = [1e-9;1e-6;1e-3;1;1e3;1e6;1e9];
+% gammaA = [1e-9;1e-6;1e-3;1;1e3;1e6;1e9];
+% gammaA = [1e-3;1e-2;1e-1;1;1e1;1e2;1e3];
+gammaA = linspace(0.001, 10, 20);
 if exist('A', 'var') && ~isempty(A)
     gammaA = A;
 end
-gammaI = [1e-9;1e-6;1e-3;1;1e3;1e6;1e9];
+% gammaI = [1e-9;1e-6;1e-3;1;1e3;1e6;1e9];
+gammaI = gammaA;
 if exist('I', 'var') && ~isempty(I)
     gammaI = I;
 end

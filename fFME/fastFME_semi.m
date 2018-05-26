@@ -1,4 +1,4 @@
-function [W, b, F] = fastFME_semi(X, B, Y, para)
+function [W, b, F] = fastFME_semi(X, B, Y, para, class_norm)
 % INPUT
 %     X: f*n matrix, each colomn is a data point
 %     B: n*m matrix, sample adaptive weights
@@ -37,3 +37,7 @@ F = VUY + ...
     V_inv * (G * (full(M_inv - G' * V_inv * G) \ (G' * VUY)));
 W = A \ (Xc * F);
 b = 1/n*(sum(F,1)' - W'*(X*ones(n,1)));
+
+if class_norm
+    F = F * diag(sum(F).^-1);
+end

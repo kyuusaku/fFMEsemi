@@ -10,6 +10,7 @@ addpath(genpath('./baselines'));
 addpath(genpath('./mmlp'));
 addpath(genpath('./framework'));
 addpath(genpath('./fFME'));
+addpath('testcode');
 % parse inputs
 p = parse_inputs();
 parse(p,dataset,o,varargin{:});
@@ -306,7 +307,7 @@ X_fastFME_t = result_fastFME1_1e9_para_best{1}.accuracy(...
 X_fastFME_t = squeeze(X_fastFME_t)';
 X_aFME_t = result_aFME_1e9_para_best{1}.accuracy(...
     result_aFME_1e9_para_best{1}.best_test_para_id(1), ...
-    result_aFME_1e9_para_best{1}.best_test_para_id(2), :, 1);
+    result_aFME_1e9_para_best{1}.best_test_para_id(2), :, 2);
 X_aFME_t = squeeze(X_aFME_t)';
 X_test = {X_NN_t; X_LapRLS_t; X_fastFME_t; X_aFME_t};
 test_ttest = zeros(numel(X_test), numel(X_test), 2);
