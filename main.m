@@ -1,6 +1,11 @@
 %%
 clear;
 parpool(4);
+addpath(genpath('testcode'));
+
+%% 
+run_time('samples', 20000:20000:100000, 50);
+run_time('features', 20000, [256, 512, 1024, 2048, 4096]);
 
 %%
 run_experiment_semi('usps',10,'anchorNumber',50)

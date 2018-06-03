@@ -115,3 +115,19 @@ V = full(U) + (para.mu + 1) .* eye(n);
 diff = V_inv - pinv(V);
 assert(sum(abs(diff(:)) > 1e-5)==0, 'V_inv and pinv(V) are not equal');
 
+%% test ridge regression
+f = 2; c = 4; l = 10;
+W = rand(f, c);
+b = rand(c, 1);
+Xl = rand(f, l);
+Y = rand(l, c);
+o = ones(l, 1);
+sum1 = 0;
+for i = 1:l
+    tmp = W'*Xl(:,i) + b - Y(i,:)';
+    tmp = tmp .* tmp;
+    sum1 = sum1 + sum(tmp(:));
+end
+sum1 = sum1 / l
+sum2 = trace(Xl'*W*W'*Xl+2*Xl'*W*b*o'-2*Xl'*W*Y'+o*b'*b*o'-2*o*b'*Y'+Y*Y') / l
+    

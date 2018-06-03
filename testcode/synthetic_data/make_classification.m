@@ -17,6 +17,7 @@ y = zeros(n_samples, 1);
 centroids = 2*n_clusters*lhsdesign(n_clusters, n_features);
 
 for i = 1:n_clusters
-	X((i-1)*n_samples_per_cluster+1:i*n_samples_per_cluster,:) = randn(n_samples_per_cluster, n_features) + repmat(centroids(i,:), n_samples_per_cluster, 1);
+	X((i-1)*n_samples_per_cluster+1:i*n_samples_per_cluster,:) = ...
+        randn(n_samples_per_cluster, n_features) + repmat(centroids(i,:), n_samples_per_cluster, 1);
     y((i-1)*n_samples_per_cluster+1:i*n_samples_per_cluster) = i;
 end
