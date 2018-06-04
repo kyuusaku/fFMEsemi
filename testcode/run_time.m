@@ -4,7 +4,7 @@ function run_time(type, num_samples, num_features)
 
 %% env
 close all;
-clear;
+% clear;
 clc;
 warning off all;
 addpath(genpath('./baselines'));
@@ -52,7 +52,7 @@ num = numel(nums);
 
 %% generate samples
 samples_file = fullfile(record_path, 'samples.mat');
-if ~exist(pca_data, 'file')
+if ~exist(samples_file, 'file')
     if strcmp(type, 'samples')
         samples = cell(numel(num_samples), 2);
         labels = cell(numel(num_samples), 1);
@@ -168,8 +168,6 @@ else
     load(fFME_data);
 end
 
-clear ags;
-
 %% efficient anchor graph
 eags_data = fullfile(record_path, 'eags.mat');
 if ~exist(eags_data, 'file')
@@ -201,6 +199,8 @@ if ~exist(eags_data, 'file')
 else
     load(eags_data);
 end
+
+clear ags;
 
 %%
 eagr_data = fullfile(record_path, 'eagr.mat');
@@ -275,8 +275,8 @@ if ~exist(aFME_data, 'file')
         for t = 1 : para.iter
             label_ind = find(l_tmp(:,t));
             tic;
-            Y = zeros(size(X_tmp, 2), n_class);
-            for cc = 1 : n_class
+            Y = zeros(numel(Y_tmp), para.num_classes);
+            for cc = 1 : para.num_classes
                 cc_ind = find(Y_tmp(label_ind) == class(cc));
                 Y(label_ind(cc_ind),cc) = 1;
             end
@@ -370,9 +370,11 @@ if ~exist(mmlp_data, 'file')
         l_tmp = labels{i}{1};
         for t = 1 : para.iter
             label_ind = find(l_tmp(:,t));
-            [~, e, ~, ~, MMLP_time(i, t)] = mmlp(E_tmp, X_tmp, Y_tmp, label_ind);
+            [~, e, ~, ~, MMLP_time(i, t), num_iter, num_prop] = mmlp(E_tmp, X_tmp, Y_tmp, label_ind);
             fprintf('MMLP: num=%d, t=%d, time=%f\n', ...
                 nums(i), t, MMLP_time(i, t));
+            num_iter
+            num_prop
         end
     end
     save(mmlp_data, 'MMLP_time');
@@ -436,7 +438,7 @@ if ~exist(mtc_data, 'file')
             Y = zeros(numel(Y_tmp), 1)-1;
             Y(label_ind) = Y_tmp(label_ind) - 1;
             % compute F
-            F = mtc_matlab(full(e_tmp), num_samples(i), Y, n_class, 0, 1);
+            F = mtc_matlab(full(e_tmp), numel(Y_tmp), Y, para.num_classes, 0, 1);
             F = F + 1;
             MTC_time(i, t) = toc;
             fprintf('MTC: num=%d, t=%d, time=%f\n', ...
@@ -467,8 +469,8 @@ if ~exist(fme_data, 'file')
             for t = 1 : para.iter
                 label_ind = find(l_tmp(:,t));
                 tic;
-                Y = zeros(size(X_tmp, 2), n_class);
-                for cc = 1 : n_class
+                Y = zeros(size(X_tmp, 2), para.num_classes);
+                for cc = 1 : para.num_classes
                     cc_ind = find(Y_tmp(label_ind) == class(cc));
                     Y(label_ind(cc_ind),cc) = 1;
                 end
