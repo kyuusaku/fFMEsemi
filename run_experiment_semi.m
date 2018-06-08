@@ -51,7 +51,7 @@ disp(para);
 %% load data
 pca_data = fullfile(save_path, 'pca.mat');
 if ~exist(pca_data, 'file')
-    [X_train, Y_train, X_test, Y_test] = load_dataset(p.Results.dataset,para);
+    [X_train, Y_train, X_test, Y_test] = load_dataset(p.Results.dataset,para,record_path);
     % check gnd
     tmp_class = unique(Y_train)';
     if sum(tmp_class == 1:numel(tmp_class)) == numel(tmp_class)
@@ -116,7 +116,7 @@ gamma = mu;
 ffme_data_1_1e9_para_best = fullfile(record_path, 'result_fastFME1_1e9_para_best2.mat');
 if ~exist(ffme_data_1_1e9_para_best, 'file')
     result_fastFME1_1e9_para_best = run_fastFME_semi_para(X_train, Y_train, X_test, Y_test, B, label, ...
-        1e9, mu, gamma);
+        1e9, mu, gamma, true);
     save(ffme_data_1_1e9_para_best, 'result_fastFME1_1e9_para_best');
 else
     load(ffme_data_1_1e9_para_best);
@@ -146,18 +146,18 @@ end
 celldisp(result_EAGR_para_best);
 
 %% run efFME
-mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
-gamma = mu;
-best_beta = result_EAGR_para_best{1}.best_id(1)
-effme_data_1_1e9_para_best = fullfile(record_path, 'result_efFME1_1e9_para_best2.mat');
-if ~exist(effme_data_1_1e9_para_best, 'file')
-    result_efFME1_1e9_para_best = run_fastFME_semi_para(X_train, Y_train, X_test, Y_test, ...
-        Z{best_beta}, label, 1e9, mu, gamma);
-    save(effme_data_1_1e9_para_best, 'result_efFME1_1e9_para_best');
-else
-    load(effme_data_1_1e9_para_best);
-end
-celldisp(result_efFME1_1e9_para_best);
+% mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
+% gamma = mu;
+% best_beta = result_EAGR_para_best{1}.best_id(1)
+% effme_data_1_1e9_para_best = fullfile(record_path, 'result_efFME1_1e9_para_best2.mat');
+% if ~exist(effme_data_1_1e9_para_best, 'file')
+%     result_efFME1_1e9_para_best = run_fastFME_semi_para(X_train, Y_train, X_test, Y_test, ...
+%         Z{best_beta}, label, 1e9, mu, gamma, true);
+%     save(effme_data_1_1e9_para_best, 'result_efFME1_1e9_para_best');
+% else
+%     load(effme_data_1_1e9_para_best);
+% end
+% celldisp(result_efFME1_1e9_para_best);
 
 %% run aFME
 mu = [1e-24;1e-21;1e-18;1e-15;1e-12;1e-9;1e-6;1e-3;1;1e3;1e6;1e9;1e12;1e15;1e18;1e21;1e24];
@@ -166,7 +166,7 @@ best_beta = result_EAGR_para_best{1}.best_id(1)
 afme_data_1e9_para_best = fullfile(record_path, 'result_aFME_1e9_para_best.mat');
 if ~exist(afme_data_1e9_para_best, 'file')
     result_aFME_1e9_para_best = run_aFME_semi_para(X_train, Y_train, X_test, Y_test, anchor, ...
-        Z{best_beta}, rLz{best_beta}, label, 1e9, mu, gamma);
+        Z{best_beta}, rLz{best_beta}, label, 1e9, mu, gamma, true);
     save(afme_data_1e9_para_best, 'result_aFME_1e9_para_best');
 else
     load(afme_data_1e9_para_best);
@@ -251,16 +251,16 @@ celldisp(result_LapRLS2_para_best)
 
 %% run FME
 if runFME
-best_s = []; best_mu = []; best_gamma = [];
-fme_data_1_1_para_best = fullfile(record_path, 'result_FME1_1_para_best.mat');
-if ~exist(fme_data_1_1_para_best, 'file')
-    result_FME1_1_para_best = run_FME_semi_para(X_train, Y_train, X_test, Y_test, E_max, label, ...
-        1, best_mu, best_gamma, best_s);
-    save(fme_data_1_1_para_best, 'result_FME1_1_para_best');
-else
-    load(fme_data_1_1_para_best);
-end
-celldisp(result_FME1_1_para_best)
+    best_s = []; best_mu = []; best_gamma = [];
+    fme_data_1_1_para_best = fullfile(record_path, 'result_FME1_1_para_best.mat');
+    if ~exist(fme_data_1_1_para_best, 'file')
+        result_FME1_1_para_best = run_FME_semi_para(X_train, Y_train, X_test, Y_test, E_max, label, ...
+            1, best_mu, best_gamma, best_s);
+        save(fme_data_1_1_para_best, 'result_FME1_1_para_best');
+    else
+        load(fme_data_1_1_para_best);
+    end
+    celldisp(result_FME1_1_para_best)
 end
 
 %% ttest
@@ -328,10 +328,40 @@ celldisp(result_MTC_para);
 celldisp(result_NN_para);
 celldisp(result_LapRLS2_para_best);
 celldisp(result_fastFME1_1e9_para_best);
-celldisp(result_efFME1_1e9_para_best);
+% celldisp(result_efFME1_1e9_para_best);
 celldisp(result_aFME_1e9_para_best);
 if runFME
 celldisp(result_FME1_1_para_best);
 end
 unlabel_ttest
 test_ttest
+
+%% write result
+fileID = fopen(fullfile(record_path, 'result.txt'), 'w');
+fprintf(fileID,'& \\mbox{%s} & %.2f $\\pm$ %.2f & - \n',...
+    'AGR', result_AGR_para_best{1}.best_train_accuracy); 
+fprintf(fileID,'&  & $(%1.e)$ & \n',...
+    result_AGR_para_best{1}.best_para);
+fprintf(fileID,'& \\mbox{%s} & %.2f $\\pm$ %.2f & - \n',...
+    'EAGR', result_EAGR_para_best{1}.best_train_accuracy); 
+fprintf(fileID,'&  & $(%1.e)$ & \n',...
+    result_EAGR_para_best{1}.best_para(2));
+fprintf(fileID,'& \\mbox{%s} & %.2f $\\pm$ %.2f & - \n',...
+    'MMLP', result_MMLP_para{1}.best_train_accuracy); 
+fprintf(fileID,'& \\mbox{%s} & %.2f $\\pm$ %.2f & - \n',...
+    'MTC', result_MTC_para{1}.best_train_accuracy); 
+fprintf(fileID,'& \\mbox{%s} & %.2f $\\pm$ %.2f &  %.2f $\\pm$ %.2f \n',...
+    '1NN', result_NN_para{1}.best_train_accuracy, result_NN_para{1}.best_test_accuracy);
+fprintf(fileID,'& \\mbox{%s} & %.2f $\\pm$ %.2f &  %.2f $\\pm$ %.2f \n',...
+    'LAPRLS\L', result_LapRLS2_para_best{1}.best_train_accuracy, result_LapRLS2_para_best{1}.best_test_accuracy);
+fprintf(fileID,'&  & $(%f, %f)$ & $(%f, %f)$ \n',...
+    result_LapRLS2_para_best{1}.best_train_para(2:3), result_LapRLS2_para_best{1}.best_test_para(2:3));
+fprintf(fileID,'& \\mbox{%s} & %.2f $\\pm$ %.2f &  %.2f $\\pm$ %.2f \n',...
+    'f-FME', result_fastFME1_1e9_para_best{1}.best_train_accuracy, result_fastFME1_1e9_para_best{1}.best_test_accuracy);
+fprintf(fileID,'&  & $(%1.e, %1.e)$ & $(%1.e, %1.e)$ \n',...
+    result_fastFME1_1e9_para_best{1}.best_train_para, result_fastFME1_1e9_para_best{1}.best_test_para);
+fprintf(fileID,'& \\mbox{%s} & %.2f $\\pm$ %.2f &  %.2f $\\pm$ %.2f \n',...
+    'r-FME', result_aFME_1e9_para_best{1}.best_train_accuracy, result_aFME_1e9_para_best{1}.best_test_accuracy);
+fprintf(fileID,'&  & $(%1.e, %1.e)$ & $(%1.e, %1.e)$ \n',...
+    result_aFME_1e9_para_best{1}.best_train_para, result_aFME_1e9_para_best{1}.best_test_para);
+fclose(fileID);

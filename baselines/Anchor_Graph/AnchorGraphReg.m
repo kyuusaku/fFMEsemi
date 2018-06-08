@@ -1,4 +1,4 @@
-function [F, A, err] = AnchorGraphReg(Z, rL, ground, label_index, gamma)
+function [F, A, err, elapsed_time] = AnchorGraphReg(Z, rL, ground, label_index, gamma)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 
 % AnchorGraphReg 
@@ -13,6 +13,7 @@ function [F, A, err] = AnchorGraphReg(Z, rL, ground, label_index, gamma)
 % err: classification error rate on unlabeled data
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+tic;
 
 [n,m] = size(Z);
 ln = length(label_index);
@@ -22,25 +23,25 @@ Yl = zeros(ln,C);
 for i = 1:C
     ind = find(ground(label_index) == i);
     Yl(ind',i) = 1;
-    clear ind;
+%     clear ind;
 end
 
 Zl = Z(label_index',:);
 LM = Zl'*Zl+gamma*rL; 
-clear rL; 
+% clear rL; 
 RM = Zl'*Yl;  
-clear Yl;
-clear Zl;
+% clear Yl;
+% clear Zl;
 A = (LM+1e-6*eye(m))\RM; 
-clear LM;
-clear RM;
+% clear LM;
+% clear RM;
 
 F = Z*A; 
-clear Z;
+% clear Z;
 % tmpF = sum(F)';
 % F1 = F*spdiags(tmpF.^-1, 0, numel(tmpF), numel(tmpF)); clear temF;
 % if size(F,2) < 2000
-    F1 = F*diag(sum(F).^-1);
+    F1 = F*diag(sum(F).^-1); elapsed_time = toc;
     [temp,order] = max(F1,[],2);
 % else
 %     for i = 1 : size(F, 2)

@@ -10,4 +10,4 @@ Accelerating Flexible Manifold Embedding for Scalable Semi-Supervised Learning
 # Project structure:
 
 * all the data used in our paper can be download by [Baidu Yun](https://pan.baidu.com/s/1mebXNVKNpfeCCI6xyDzJpw)
-* `main.m` is for Table 
+* `main.m` is for reproduction

@@ -1,14 +1,15 @@
-%% draw anchors
+function draw_anchors(dataset)
 
 %%
-dataset = 'usps';
-num_anchors = [50, 100 : 100 : 1000];
-FME_anchor = 100;
-
+if strcmp(dataset, 'usps')
+    num_anchors = [50, 100 : 100 : 1000];
+    FME_anchor = 100;
+end
 %%
-dataset = 'coil100';
-num_anchors = 200 : 200 : 4000;
-FME_anchor = 100;
+if strcmp(dataset, 'coil100')
+    num_anchors = 200 : 200 : 4000;
+    FME_anchor = 100;
+end
 
 %%
 save_path = ['result/' dataset '/'];
@@ -53,4 +54,4 @@ set(gca,'XLim',[min(num_anchors),max(num_anchors)]);
 xlabel('Number of anchors','FontSize',f_size);
 ylabel('Unlabel & Test accuracy','FontSize',f_size);
 set(gca,'FontSize',f_size);
-print(h1,'-dpng',fullfile(save_path, 'anchors.png'));
+print(h1,'-dpng',fullfile(save_path, [dataset '-anchors.png']));

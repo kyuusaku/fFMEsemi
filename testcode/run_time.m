@@ -10,6 +10,7 @@ warning off all;
 addpath(genpath('./baselines'));
 addpath(genpath('./mmlp'));
 addpath('./flann-linux');
+% addpath('./flann-mac');
 addpath('./framework');
 addpath('./fFME');
 
@@ -54,15 +55,18 @@ num = numel(nums);
 samples_file = fullfile(record_path, 'samples.mat');
 if ~exist(samples_file, 'file')
     if strcmp(type, 'samples')
+        max_num_samples = max(num_samples(:));
+        [fea, gnd] = make_classification(max_num_samples, num_features, para.num_classes);
+        fea = fea';
+        class = unique(gnd)';
+        assert(sum(class == 1:numel(class)) == numel(class)); % check gnd
         samples = cell(numel(num_samples), 2);
         labels = cell(numel(num_samples), 1);
         for i = 1 : numel(num_samples)
-            [fea, gnd] = make_classification(num_samples(i), num_features, para.num_classes);
-            class = unique(gnd)';
-            assert(sum(class == 1:numel(class)) == numel(class)); % check gnd
-            samples{i,1} = fea';
-            samples{i,2} = gnd;
-            l_tmp = generate_label(gnd, para);
+            sample_inds = randsample(max_num_samples, num_samples(i));
+            samples{i,1} = fea(:, sample_inds);
+            samples{i,2} = gnd(sample_inds);
+            l_tmp = generate_label(samples{i,2}, para);
             labels{i} = l_tmp;
         end
         clear fea gnd;
@@ -123,9 +127,8 @@ if ~exist(agr_data, 'file')
         l_tmp = labels{i}{1};
         for t = 1 : para.iter
             label_ind = find(l_tmp(:,t));
-            tic;
-            [~, ~, e] = AnchorGraphReg(B_tmp, rL_tmp, Y_tmp', label_ind, 0.01);
-            AGR_time(i, t) = toc;
+            [~, ~, e, elapsed_time] = AnchorGraphReg(B_tmp, rL_tmp, Y_tmp', label_ind, 0.01);
+            AGR_time(i, t) = elapsed_time;
             fprintf('AGR: num=%d, t=%d, time=%f\n', ...
                 nums(i), t, AGR_time(i, t));
         end
@@ -213,9 +216,8 @@ if ~exist(eagr_data, 'file')
         l_tmp = labels{i}{1};
         for t = 1 : para.iter
             label_ind = find(l_tmp(:,t));
-            tic;
-            [~, ~] = EAGReg(Z_tmp, rLz_tmp, Y_tmp', label_ind, 1);
-            EAGR_time(i, t) = toc;
+            [~, ~, elapsed_time] = EAGReg(Z_tmp, rLz_tmp, Y_tmp', label_ind, 1);
+            EAGR_time(i, t) = elapsed_time;
             fprintf('EAGR: num=%d, t=%d, time=%f\n', ...
                 nums(i), t, EAGR_time(i, t));
         end
@@ -226,37 +228,37 @@ else
 end
 
 %% efFME
-efFME_data = fullfile(record_path, 'effme.mat');
-if ~exist(efFME_data, 'file')
-    p.ul = 1e9;
-    p.uu = 0;
-    p.mu = 1e-9;
-    p.gamma = 1e-9;
-    efFME_time = zeros(num, para.iter);
-    for i = 1 : num
-        X_tmp = samples{i,1};
-        Y_tmp = samples{i,2};
-        Z_tmp = eags{i,1};
-        l_tmp = labels{i}{1};
-        for t = 1 : para.iter            
-            label_ind = find(l_tmp(:,t));
-            tic;
-            Y = zeros(size(X_tmp, 2), para.num_classes);
-            for cc = 1 : para.num_classes
-                cc_ind = find(Y_tmp(label_ind) == class(cc));
-                Y(label_ind(cc_ind),cc) = 1;
-            end
-            Y = sparse(Y);
-            [~, ~, ~] = fastFME_semi(X_tmp, Z_tmp, Y, p, true);
-            efFME_time(i, t) = toc;
-            fprintf('efFME: num=%d, t=%d, time=%f\n', ...
-                nums(i), t, efFME_time(i, t));
-        end
-    end
-    save(efFME_data, 'efFME_time');
-else
-    load(efFME_data);
-end
+% efFME_data = fullfile(record_path, 'effme.mat');
+% if ~exist(efFME_data, 'file')
+%     p.ul = 1e9;
+%     p.uu = 0;
+%     p.mu = 1e-9;
+%     p.gamma = 1e-9;
+%     efFME_time = zeros(num, para.iter);
+%     for i = 1 : num
+%         X_tmp = samples{i,1};
+%         Y_tmp = samples{i,2};
+%         Z_tmp = eags{i,1};
+%         l_tmp = labels{i}{1};
+%         for t = 1 : para.iter            
+%             label_ind = find(l_tmp(:,t));
+%             tic;
+%             Y = zeros(size(X_tmp, 2), para.num_classes);
+%             for cc = 1 : para.num_classes
+%                 cc_ind = find(Y_tmp(label_ind) == class(cc));
+%                 Y(label_ind(cc_ind),cc) = 1;
+%             end
+%             Y = sparse(Y);
+%             [~, ~, ~] = fastFME_semi(X_tmp, Z_tmp, Y, p, true);
+%             efFME_time(i, t) = toc;
+%             fprintf('efFME: num=%d, t=%d, time=%f\n', ...
+%                 nums(i), t, efFME_time(i, t));
+%         end
+%     end
+%     save(efFME_data, 'efFME_time');
+% else
+%     load(efFME_data);
+% end
 
 %% r-FME
 aFME_data = fullfile(record_path, 'afme.mat');
@@ -375,6 +377,7 @@ if ~exist(mmlp_data, 'file')
                 nums(i), t, MMLP_time(i, t));
             num_iter
             num_prop
+            e
         end
     end
     save(mmlp_data, 'MMLP_time');
@@ -455,12 +458,12 @@ end
 %%
 fme_data = fullfile(record_path, 'fme.mat');
 if ~exist(fme_data, 'file')
+    FME_time = zeros(num, para.iter);
     try
         p.ul = 1e9;
         p.uu = 0;
         p.mu = 1e-9;
-        p.gamma = 1e-9;
-        FME_time = zeros(num, para.iter);
+        p.lamda = 1e-9;
         for i = 1 : num
             X_tmp = samples{i,1};
             Y_tmp = samples{i,2};
@@ -478,7 +481,7 @@ if ~exist(fme_data, 'file')
                 [~, ~, ~] = FME_semi(X_tmp, L_tmp, Y, p);
                 FME_time(i, t) = toc;
                 fprintf('FME: num=%d, t=%d, time=%f\n', ...
-                    num_samples(i), t, FME_time(i, t));
+                    nums(i), t, FME_time(i, t));
             end
         end
     catch ErrorInfo

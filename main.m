@@ -1,12 +1,18 @@
 %%
 clear;
-parpool(4);
+parpool;
 addpath(genpath('testcode'));
 
-%% 
-run_time('samples', 20000:20000:100000, 50);
-run_time('features', 20000, [256, 512, 1024, 2048, 4096]);
+%% Running time on synthetic data
+run_time('samples', [10000, 20000, 40000, 80000, 160000], 10);
+run_time('features', 10000, [256, 512, 1024, 2048, 4096]);
 
+%% Performance on synthetic data
+run_experiment_semi('two_moon',2,'anchorNumber',100);
+run_experiment_semi('halfkernel',2,'anchorNumber',100);
+run_experiment_semi('pinwheel',2,'anchorNumber',100);
+
+%% Performance on small dataset with different number of anchors
 %%
 run_experiment_semi('usps',10,'anchorNumber',50)
 run_experiment_semi('usps',10,'anchorNumber',100,'runFME',true)
@@ -19,6 +25,7 @@ run_experiment_semi('usps',10,'anchorNumber',700)
 run_experiment_semi('usps',10,'anchorNumber',800)
 run_experiment_semi('usps',10,'anchorNumber',900)
 run_experiment_semi('usps',10,'anchorNumber',1000)
+draw_anchors('usps');
 
 %%
 run_experiment_semi('coil100',10,'anchorNumber',100,'runFME',true)
@@ -42,8 +49,9 @@ run_experiment_semi('coil100',10,'anchorNumber',3400)
 run_experiment_semi('coil100',10,'anchorNumber',3600)
 run_experiment_semi('coil100',10,'anchorNumber',3800)
 run_experiment_semi('coil100',10,'anchorNumber',4000)
+draw_anchors('coil100');
 
-%%
+%% Performance on real-world large scale dataset
 %%
 run_experiment_semi('norb',5)
 run_experiment_semi('norb',8)

@@ -1,5 +1,8 @@
 function data_name = get_data_name(dataset)
 
+if strcmp(dataset, 'two_moon') || strcmp(dataset, 'halfkernel') || strcmp(dataset, 'pinwheel')
+    data_name = dataset;
+end
 if strcmp(dataset, 'norb')
     data_name = 'norb_small_gray';
 end

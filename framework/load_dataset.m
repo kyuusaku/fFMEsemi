@@ -1,8 +1,49 @@
-function [X_train, Y_train, X_test, Y_test] = load_dataset(dataset,para)
+function [X_train, Y_train, X_test, Y_test] = load_dataset(dataset,para,record_path)
 
-data_path = fullfile('data', para.dataset);
-if ~exist(data_path, 'dir')
-    error('no dataset exists');
+n_synthetic = 1000;
+gs=12;
+if strcmp(dataset, 'two_moon')
+    [fea, gnd] = my_two_moon(n_synthetic);
+    fea=fea';
+    gscatter(fea(1,:)', fea(2,:)', gnd, 'rb', 'x.', gs, gs, 'off');
+    axis off;
+    print(gcf,'-dpng',fullfile(record_path, 'two_moon.png'));
+    
+    % default split
+    split = choose_each_class(gnd, 0.5, 1);
+    % preprocess
+    X_train = fea(:, split); Y_train = gnd(split);
+    X_test = fea(:, ~split); Y_test = gnd(~split);
+elseif strcmp(dataset, 'halfkernel')
+    data = halfkernel(2*n_synthetic);
+    fea=data(:,1:2); gnd=data(:,3);
+    fea=fea';
+    gscatter(fea(1,:)', fea(2,:)', gnd, 'rb', 'x.', gs, gs, 'off');
+    axis off;
+    print(gcf,'-dpng',fullfile(record_path, 'halfkernel.png'));
+    
+    % default split
+    split = choose_each_class(gnd, 0.5, 1);
+    % preprocess
+    X_train = fea(:, split); Y_train = gnd(split);
+    X_test = fea(:, ~split); Y_test = gnd(~split);
+elseif strcmp(dataset, 'pinwheel')
+    [fea, gnd] = pinwheel(0.2, 0.3, 3, n_synthetic, 0.25);
+    fea=fea';
+    gscatter(fea(1,:)', fea(2,:)', gnd, 'rbm', 'x.o', gs, gs, 'off');
+    axis off;
+    print(gcf,'-dpng',fullfile(record_path, 'pinwheel.png'));
+    
+    % default split
+    split = choose_each_class(gnd, 0.5, 1);
+    % preprocess
+    X_train = fea(:, split); Y_train = gnd(split);
+    X_test = fea(:, ~split); Y_test = gnd(~split);
+else
+    data_path = fullfile('data', para.dataset);
+    if ~exist(data_path, 'dir')
+        error('no dataset exists');
+    end
 end
 
 if strcmp(dataset, 'norb')
