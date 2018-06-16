@@ -58,14 +58,14 @@ run_experiment_semi('norb',8)
 run_experiment_semi('norb',10)
 
 %%
-run_experiment_semi('mnist-large-imbalance',5)
-run_experiment_semi('mnist-large-imbalance',8)
-run_experiment_semi('mnist-large-imbalance',10)
+run_experiment_semi('mnist-large-imbalance',5,'anchorNumber',2000)
+run_experiment_semi('mnist-large-imbalance',8,'anchorNumber',2000)
+run_experiment_semi('mnist-large-imbalance',10,'anchorNumber',2000)
 
 %%
-run_experiment_semi('usps-large-imbalance',5)
-run_experiment_semi('usps-large-imbalance',8)
-run_experiment_semi('usps-large-imbalance',10)
+run_experiment_semi('usps-large-imbalance',5,'anchorNumber',2000)
+run_experiment_semi('usps-large-imbalance',8,'anchorNumber',2000)
+run_experiment_semi('usps-large-imbalance',10,'anchorNumber',2000)
 
 %%
 run_experiment_semi('rcv1',10)
