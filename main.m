@@ -68,11 +68,21 @@ run_experiment_semi('usps-large-imbalance',8,'anchorNumber',2000)
 run_experiment_semi('usps-large-imbalance',10,'anchorNumber',2000)
 
 %%
-run_experiment_semi('rcv1',10)
-run_experiment_semi('rcv1',50)
-run_experiment_semi('rcv1',100)
+run_experiment_semi('rcv1',10,'classMassNormalization',false)
+run_experiment_semi('rcv1',50,'classMassNormalization',false)
+run_experiment_semi('rcv1',100,'classMassNormalization',false)
 
 %%
-run_experiment_semi('covtype',10)
-run_experiment_semi('covtype',50)
-run_experiment_semi('covtype',100)
+run_experiment_semi('rcv1',10,'anchorNumber',2000)
+run_experiment_semi('rcv1',50,'anchorNumber',2000)
+run_experiment_semi('rcv1',100,'anchorNumber',2000)
+
+%%
+run_experiment_semi('covtype',10,'classMassNormalization',false)
+run_experiment_semi('covtype',50,'classMassNormalization',false)
+run_experiment_semi('covtype',100,'classMassNormalization',false)
+
+%%
+run_experiment_semi('covtype',10,'anchorNumber',2000)
+run_experiment_semi('covtype',50,'anchorNumber',2000)
+run_experiment_semi('covtype',100,'anchorNumber',2000)

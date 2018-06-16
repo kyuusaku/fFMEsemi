@@ -7,7 +7,7 @@ validDataset = {'two_moon','halfkernel','pinwheel','norb','aloi','rcv1','mnist',
 checkDataset = @(x) any(validatestring(x,validDataset));
 
 defaultSystem = 'linux';
-validSystem = {'linux','win'};
+validSystem = {'linux','win','mac'};
 checkSystem = @(x) any(validatestring(x,validSystem));
 
 defaultParfor = false;
@@ -26,3 +26,6 @@ addParameter(p,'anchorNumber',defaultAnchorNumber,@isnumeric);
 
 defaultRunFME = false;
 addParameter(p,'runFME',defaultRunFME,@islogical);
+
+defaultClassMassNormalization = true;
+addParameter(p,'classMassNormalization',defaultClassMassNormalization,@islogical);

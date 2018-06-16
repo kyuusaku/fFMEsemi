@@ -45,6 +45,7 @@ para.knn = 3;
 para.beta = [1e-3;1e-2;1e-1;1;1e1;1e2;1e3];
 % para.num_anchors = get_num_anchors(p.Results.dataset);
 para.K = 10;
+para.classnorm = p.Results.classMassNormalization;
 save(fullfile(record_path, 'para.mat'), 'para');
 disp(para);
 
@@ -116,7 +117,7 @@ gamma = mu;
 ffme_data_1_1e9_para_best = fullfile(record_path, 'result_fastFME1_1e9_para_best2.mat');
 if ~exist(ffme_data_1_1e9_para_best, 'file')
     result_fastFME1_1e9_para_best = run_fastFME_semi_para(X_train, Y_train, X_test, Y_test, B, label, ...
-        1e9, mu, gamma, true);
+        1e9, mu, gamma, para.classnorm);
     save(ffme_data_1_1e9_para_best, 'result_fastFME1_1e9_para_best');
 else
     load(ffme_data_1_1e9_para_best);
@@ -166,7 +167,7 @@ best_beta = result_EAGR_para_best{1}.best_id(1)
 afme_data_1e9_para_best = fullfile(record_path, 'result_aFME_1e9_para_best.mat');
 if ~exist(afme_data_1e9_para_best, 'file')
     result_aFME_1e9_para_best = run_aFME_semi_para(X_train, Y_train, X_test, Y_test, anchor, ...
-        Z{best_beta}, rLz{best_beta}, label, 1e9, mu, gamma, true);
+        Z{best_beta}, rLz{best_beta}, label, 1e9, mu, gamma, para.classnorm);
     save(afme_data_1e9_para_best, 'result_aFME_1e9_para_best');
 else
     load(afme_data_1e9_para_best);
