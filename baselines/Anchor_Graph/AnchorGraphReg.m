@@ -42,7 +42,9 @@ F = Z*A;
 % F1 = F*spdiags(tmpF.^-1, 0, numel(tmpF), numel(tmpF)); clear temF;
 % if size(F,2) < 2000
 if class_norm
-    F1 = F*diag(sum(F).^-1); 
+    F1 = F*diag(sum(F).^-1);
+else
+    F1 = F;
 end
     elapsed_time = toc;
     [temp,order] = max(F1,[],2);
