@@ -1,4 +1,4 @@
-function [acc, output, elapsed_time] = EAGReg(Z, rL, label, label_index,gamma)
+function [acc, output, elapsed_time] = EAGReg(Z, rL, label, label_index, gamma, class_norm)
 
 if ~exist('gamma', 'var') || isempty(gamma),
     gamma = 1;
@@ -25,7 +25,9 @@ A = (LM+1e-6*eye(m))\RM;
 
 % Label inference
 F = Z*A; 
+if class_norm
 F = F*diag(sum(F).^-1);
+end
 elapsed_time = toc;
 [~,output] = max(F,[],2);
 output=output';

@@ -128,7 +128,7 @@ celldisp(result_fastFME1_1e9_para_best);
 best_gamma = [];
 agr_data_para_best = fullfile(record_path, 'result_AGR_para_best.mat');
 if ~exist(agr_data_para_best, 'file')
-    result_AGR_para_best = run_AGR_para(Y_train, B, rL, label, best_gamma);
+    result_AGR_para_best = run_AGR_para(Y_train, B, rL, label, best_gamma, para.classnorm);
     save(agr_data_para_best, 'result_AGR_para_best');
 else
     load(agr_data_para_best);

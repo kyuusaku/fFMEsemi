@@ -1,4 +1,4 @@
-function [F, A, err, elapsed_time] = AnchorGraphReg(Z, rL, ground, label_index, gamma)
+function [F, A, err, elapsed_time] = AnchorGraphReg(Z, rL, ground, label_index, gamma, class_norm)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 
 % AnchorGraphReg 
@@ -41,7 +41,10 @@ F = Z*A;
 % tmpF = sum(F)';
 % F1 = F*spdiags(tmpF.^-1, 0, numel(tmpF), numel(tmpF)); clear temF;
 % if size(F,2) < 2000
-    F1 = F*diag(sum(F).^-1); elapsed_time = toc;
+if class_norm
+    F1 = F*diag(sum(F).^-1); 
+end
+    elapsed_time = toc;
     [temp,order] = max(F1,[],2);
 % else
 %     for i = 1 : size(F, 2)
