@@ -3,7 +3,7 @@ function draw_anchors(dataset)
 %%
 if strcmp(dataset, 'usps')
     num_anchors = [50, 100 : 100 : 1000];
-    FME_anchor = 100;
+    FME_anchor = 1000;
 end
 %%
 if strcmp(dataset, 'coil100')
@@ -52,6 +52,6 @@ legend('FME(unlabel)','FME(test)','f-FME(unlabel)','f-FME(test)','r-FME(unlabel)
 set(gca,'YLim',[0,100]);
 set(gca,'XLim',[min(num_anchors),max(num_anchors)]);
 xlabel('Number of anchors','FontSize',f_size);
-ylabel('Unlabel & Test accuracy','FontSize',f_size);
+ylabel('Accuracy','FontSize',f_size);
 set(gca,'FontSize',f_size);
 print(h1,'-dpng',fullfile(save_path, [dataset '-anchors.png']));
