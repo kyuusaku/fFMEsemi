@@ -2,8 +2,8 @@ function p = parse_inputs()
 
 p = inputParser;
 
-validDataset = {'two_moon','halfkernel','pinwheel','norb','aloi','rcv1','mnist','mnist630k','cifar10','cifar10-rgb','covtype', ...
-    'coil100','usps','usps-large','usps-large-imbalance','mnist-large','mnist-large-imbalance'};
+validDataset = {'two_moon','halfkernel','pinwheel','norb','rcv1','mnist','covtype', ...
+    'usps','usps-large','usps-large-imbalance','mnist-large','mnist-large-imbalance'};
 checkDataset = @(x) any(validatestring(x,validDataset));
 
 defaultSystem = 'linux';

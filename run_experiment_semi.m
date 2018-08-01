@@ -221,7 +221,7 @@ celldisp(result_MMLP_para)
 best_s = [];
 mtc_data_para = fullfile(record_path, 'result_MTC_para.mat');
 if ~exist(mtc_data_para, 'file')
-    result_MTC_para = run_MTC_para(Y_train, E_max, label, best_s);
+    result_MTC_para = run_MTC_para(Y_train, E_max, label, best_s, para.K);
     save(mtc_data_para, 'result_MTC_para');
 else
     load(mtc_data_para);
@@ -243,7 +243,7 @@ best_s = []; best_gammaA = []; best_gammaI = [];
 laprls_data2_para_best = fullfile(record_path, 'result_LapRLS2_para_best.mat');
 if ~exist(laprls_data2_para_best, 'file')
     result_LapRLS2_para_best = run_LapRLS2_para(X_train, Y_train, X_test, Y_test, E_max, label, ...
-        best_s, best_gammaA, best_gammaI);
+        best_s, best_gammaA, best_gammaI, para.K);
     save(laprls_data2_para_best, 'result_LapRLS2_para_best');
 else
     load(laprls_data2_para_best);

@@ -8,6 +8,64 @@ scatter(points(1,:)',points(2,:)');
 R = [cosd(45), -sind(45); sind(45), cosd(45)]
 points = R * points;
 
+%% test runNN_para
+n_samples_per_cluster = 200;
+n_features = 2;
+fea = randn(n_samples_per_cluster, n_features);
+fea = [fea + repmat([-5, 0], n_samples_per_cluster, 1);...
+       fea + repmat([5, 0], n_samples_per_cluster, 1)];
+gnd = [ones(n_samples_per_cluster, 1); 
+     2*ones(n_samples_per_cluster, 1)];
+fea=fea';
+gscatter(fea(1,:)', fea(2,:)', gnd);
+split = choose_each_class(gnd, 0.5, 1);
+X_train = fea(:, split); Y_train = gnd(split);
+X_test = fea(:, ~split); Y_test = gnd(~split);
+para.p = [1];
+para.iter = 20;
+para.type = 'equal';
+label = generate_label(Y_train, para);
+result_NN_para = run_NN_para(X_train, Y_train, X_test, Y_test, label);
+result_NN_para{1}.accuracy
+
+%% test imbalanced_sample
+gnd = [1;1;1;2;2;2;3;3;3;4;4;4];
+fea = gnd';
+class = unique(gnd)
+ratio = [0.5,0.8,1,0.6]
+[Fea, Gnd] = imbalanced_sample(fea, gnd, class, ratio);
+assert(numel(Gnd)==7);
+assert(sum(Gnd==1)==1);
+assert(sum(Gnd==2)==2);
+assert(sum(Gnd==3)==3);
+assert(sum(Gnd==4)==1);
+assert(isequal(Fea,[1,2,2,3,3,3,4]));
+
+%% test choose_each_class
+gnd = [1;1;2;2;2;3;3;3;3;4;4;4;4;4];
+split = choose_each_class(gnd, 0.8, 1);
+assert(sum(split)==10);
+gnd_split = gnd(split);
+gnd_split_ = gnd(~split);
+assert(isequal(gnd_split_, [1;2;3;4]));
+assert(sum(gnd_split==1)==1);
+assert(sum(gnd_split==2)==2);
+assert(sum(gnd_split==3)==3);
+assert(sum(gnd_split==4)==4);
+split = choose_each_class(gnd, 0.5, 1);
+assert(sum(split)==6);
+gnd_split = gnd(split);
+assert(sum(gnd_split==1)==1);
+assert(sum(gnd_split==2)==1);
+assert(sum(gnd_split==3)==2);
+assert(sum(gnd_split==4)==2);
+split = choose_each_class(gnd, 1, 1);
+assert(sum(split)==4);
+gnd_split = gnd(split);
+assert(sum(gnd_split==1)==1);
+assert(sum(gnd_split==2)==1);
+assert(sum(gnd_split==3)==1);
+assert(sum(gnd_split==4)==1);
 
 %% test generate label
 gnd = [1;2;3;1;2;3;1;2;3;1;1;2;3;2;3];

@@ -154,7 +154,7 @@ nClass = numel(classLabel);
 nLabel = numel(gndLabel);
 YLabel = zeros(nLabel, nClass);
 for i = 1 : nClass
-    YLabel(gndLabel == i, classLabel(i)) = 1;
+    YLabel(gndLabel == i, i) = 1;
 end
 % compute W
 Xl = bsxfun(@minus, feaLabel, mean(feaLabel,2));

@@ -1,5 +1,5 @@
 function [X_train, Y_train, X_test, Y_test] = load_dataset(dataset,para,record_path)
-
+% white test
 n_synthetic = 1000;
 gs=12;
 if strcmp(dataset, 'two_moon')
@@ -58,21 +58,6 @@ if strcmp(dataset, 'norb')
     X_test = U'*bsxfun(@minus, X_test, M);
 end
 
-if strcmp(dataset, 'aloi')
-    % load original data
-    load(fullfile(data_path, strcat(para.dataset, '.mat')));
-    % default split
-    split = choose_each_class(gnd, 0.8, 1);
-    % preprocess
-    X_train = fea(:, split); Y_train = gnd(split);
-    X_test = fea(:, ~split); Y_test = gnd(~split);
-    clear fea gnd split;
-    % preprocess
-    [U, M] = pca(X_train, para.pca_preserve);
-    X_train = U'*bsxfun(@minus, X_train, M);
-    X_test = U'*bsxfun(@minus, X_test, M);
-end
-
 if strcmp(dataset, 'rcv1')
     % load original data
     load(fullfile(data_path, strcat(para.dataset, '.mat')));
@@ -114,38 +99,9 @@ if strcmp(dataset, 'mnist630k')
     clear U M;
 end
 
-if strcmp(dataset, 'cifar10-rgb')
-    % load original data
-    load(fullfile(data_path, strcat(para.dataset, '.mat')));
-    % preprocess
-    X_train = trainX'; Y_train = trainY;
-    X_test = testX'; Y_test = testY;
-    % preprocess
-    [U, M] = pca(X_train, para.pca_preserve);
-    X_train = U'*bsxfun(@minus, X_train, M);
-    X_test = U'*bsxfun(@minus, X_test, M);
-    clear U M;
-end
-
 if strcmp(dataset, 'covtype')
     % load original data
     load(fullfile(data_path, strcat(para.dataset, '.mat')));
-    % default split
-    split = choose_each_class(gnd, 0.8, 1);
-    % preprocess
-    X_train = fea(:, split); Y_train = gnd(split);
-    X_test = fea(:, ~split); Y_test = gnd(~split);
-    clear fea gnd split;
-    [U, M] = pca(X_train, para.pca_preserve);
-    X_train = U'*bsxfun(@minus, X_train, M);
-    X_test = U'*bsxfun(@minus, X_test, M);
-    clear U M;
-end
-
-if strcmp(dataset, 'coil100')
-    % load original data
-    load(fullfile(data_path, strcat(para.dataset, '.mat')));
-    fea = double(fea');
     % default split
     split = choose_each_class(gnd, 0.8, 1);
     % preprocess

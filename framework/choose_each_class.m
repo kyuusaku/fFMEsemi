@@ -1,4 +1,5 @@
 function split = choose_each_class(gnd, p, t)
+% black test
 split = false(numel(gnd), t);
 class = unique(gnd);
 for t = 1 : t

@@ -1,4 +1,5 @@
 function [U, M] = pca(X, dim)
+% have double check
 
 %% #dim & #samples
 [nFea, nSmp] = size(X);
