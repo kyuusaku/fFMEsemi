@@ -55,11 +55,11 @@ end
 %     [temp,order] = max(F,[],2);
 % end
 
-clear temp;
-clear F1;
+% clear temp;
+% clear F1;
 output = order';
-clear order;
+% clear order;
 output(label_index) = ground(label_index);
 err = length(find(output ~= ground))/(n-ln);
-clear output;
+% clear output;
 
