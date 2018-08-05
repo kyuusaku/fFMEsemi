@@ -127,7 +127,7 @@ if ~exist(agr_data, 'file')
         l_tmp = labels{i}{1};
         for t = 1 : para.iter
             label_ind = find(l_tmp(:,t));
-            [~, ~, e, elapsed_time] = AnchorGraphReg(B_tmp, rL_tmp, Y_tmp', label_ind, 0.01);
+            [~, ~, e, elapsed_time] = AnchorGraphReg(B_tmp, rL_tmp, Y_tmp', label_ind, 0.01, true);
             AGR_time(i, t) = elapsed_time;
             fprintf('AGR: num=%d, t=%d, time=%f\n', ...
                 nums(i), t, AGR_time(i, t));
@@ -216,7 +216,7 @@ if ~exist(eagr_data, 'file')
         l_tmp = labels{i}{1};
         for t = 1 : para.iter
             label_ind = find(l_tmp(:,t));
-            [~, ~, elapsed_time] = EAGReg(Z_tmp, rLz_tmp, Y_tmp', label_ind, 1);
+            [~, ~, elapsed_time] = EAGReg(Z_tmp, rLz_tmp, Y_tmp', label_ind, 1, true);
             EAGR_time(i, t) = elapsed_time;
             fprintf('EAGR: num=%d, t=%d, time=%f\n', ...
                 nums(i), t, EAGR_time(i, t));
